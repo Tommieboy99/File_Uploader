@@ -18,7 +18,6 @@ model User {
   password      String
 
   folders       Folder[]  @relation("UserFolders")
-  files         File[]    
 
   rootFolderId  Int       @unique
   rootFolder    Folder    @relation("UserRoot", fields: [rootFolderId], references: [id])
@@ -51,11 +50,8 @@ model File {
   size        Int
   createdAt   DateTime  @default(now())
 
-  userId      Int
-  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  folderId    Int
+  folder      Folder    @relation(fields: [folderId], references: [id], onDelete: Cascade)
 
-  folderId    Int?
-  folder      Folder?    @relation(fields: [folderId], references: [id], onDelete: Cascade)
-
-  @@unique([name, userId, folderId])
+  @@unique([name, folderId])
 }
