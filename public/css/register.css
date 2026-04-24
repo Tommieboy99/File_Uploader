@@ -15,25 +15,28 @@ body {
     padding: 1.5rem;
 }
 
-header {
-    text-align: center;
+.registerHeader {
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
 }
 
-.backLink {
+.homeLink {
     position: absolute;
     left: 0;
     border: 1px solid white;
     padding: 0.3rem 1rem;
 }
 
-.register {
+.registerMain {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+}
+
+.registerMainTitle {
+    font-weight: unset;
 }
 
 .registerForm {
@@ -65,30 +68,28 @@ input:focus {
     outline: none;
     border: 2px solid white;
 }
-
-.errorContainer {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.frontendErrors {
-    padding: 0.5rem;
-    background-color: rgba(255, 0, 0, 0.9);
-    display: none;
-}
-
 .backendErrors {
-    padding: 0.5rem;
-    background-color: rgba(255, 0, 0, 0.9);
+    padding-left: 0.2rem;
+    color: #ff6b6b;
+    border: 1px solid #ff6b6b;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.3rem;
 }
 
 .hidden {
     display: none;
 }
 
+.closeErrorBtn {
+    border: none;
+    background: none;
+    color: #ff6b6b;
+    padding: 0.5rem;
+}
 
-button {
+.createAccountBtn {
     padding: 0.3rem 1.5rem;
     background: none;
     border: 1px solid white;
@@ -97,12 +98,26 @@ button {
     margin: auto;
 }
 
-.loginLink {
-    text-decoration:underline;
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
 }
 
-.backLink:hover,
-button:hover {
+.loginLink {
+    text-decoration: underline;
+}
+
+.homeLink:hover,
+.createAccountBtn:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(1, 60, 115, 0.4);
+}
+
+.fieldError:empty {
+    display: none;
+}
+
+.fieldError {
+    color: #ff6b6b;
 }
