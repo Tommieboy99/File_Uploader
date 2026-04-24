@@ -9,46 +9,52 @@
 </head>
 <body>
   <div class="registerContainer">
-    <header>
-      <a href="/" class="backLink">Back</a>
+    <header class="registerHeader">
+      <a href="/" class="homeLink">Home</a>
       <h1>FISTO</h1>
     </header>
-    <main>
-      <div class="register">
-        <div class="errorContainer">
-          <h2>Create your account</h2>
-          <div class="frontendErrors">
+    <main class="registerMain">
+      <div class="container">
+        <h2 class="registerMainTitle">Create your account</h2>
+        <% if (locals.errors) { %>
+          <div class="backendErrors">
+            <div>
+              <p> Registration failed: </p>
+              <% errors.map((error) => { %>
+                <p> <%= error.msg %></p>
+              <% }) %>
+            </div>
+            <button class="closeErrorBtn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-icon lucide-x">
+                <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+              </svg>
+            </button>
           </div>
-          <div class="backendErrors <%= locals.errors ? "" : "hidden" %>">
-              <% if (locals.errors) { %>
-                <% errors.forEach(function(error) { %>
-                  <p> <%= error.msg %></p>
-                <% }) %>
-              <% } %>
-          </div>
+        <% } %>
+      </div>
+      <form action="/auth/register" method="POST" id="form" class="registerForm" novalidate>
+        <div class="inputContainer">
+          <label for="email">*Email</label>
+          <div class="fieldError" id="emailError"></div>
+          <input id="email" type="email" name="email" placeholder="johndoe@example.com" required maxlength="254"/>
+        </div>
+        
+        <div class="inputContainer">
+          <label for="password">*Password</label>
+          <div class="fieldError" id="passwordError"></div>
+          <input id="password" name="password" type="password" required minlength="8" maxlength="128" />
         </div>
 
-        <form action="/auth/register" method="POST" id="form" class="registerForm" novalidate>
+        <div class="inputContainer">
+          <label for="confirmPassword">*Confirm Password</label>
+          <div class="fieldError" id="confirmPasswordError"></div>
+          <input id="confirmPassword" name="confirmPassword" type="password" required />
+        </div>
 
-          <div class="inputContainer">
-            <label for="email">*Email</label>
-            <input id="email" name="email" placeholder="johndoe@example.com" type="email" required maxlength="254"/>
-          </div>
+        <button type="submit" class="createAccountBtn">Create Account</button>
+      </form>
 
-          <div class="inputContainer">
-            <label for="password">*Password</label>
-            <input id="password" name="password" type="password" required minlength="8" maxlength="128" />
-          </div>
-
-          <div class="inputContainer">
-            <label for="confirmPassword">*Confirm Password</label>
-            <input id="confirmPassword" name="confirmPassword" type="password" required />
-          </div>
-
-          <button type="submit">Sign Up</button>
-        </form>
-        <p>Have an account? <a href="/auth/login" class="loginLink">Log In</a></p>
-      </div>
+      <p>Have an account? <a href="/auth/login" class="loginLink">Log In</a></p>
     </main>
   </div>
 
@@ -57,54 +63,82 @@
     const password = document.getElementById('password');
     const confirmPassword = document.getElementById('confirmPassword');
     const form = document.getElementById('form');
-    const frontendErrorDiv = document.querySelector('.frontendErrors');
-    const backendErrorDiv = document.querySelector('.backendErrors');
+
+    const emailErrorDiv = document.querySelector('#emailError');
+    const passwordErrorDiv = document.querySelector('#passwordError');
+    const confirmPasswordErrorDiv = document.querySelector('#confirmPasswordError');
 
     form.addEventListener('submit', (e) => {
 
-      frontendErrorDiv.replaceChildren();
-      const errors = []
+      emailErrorDiv.replaceChildren();
+      passwordErrorDiv.replaceChildren();
+      confirmPasswordErrorDiv.replaceChildren();
+
+      const emailErrors = [];
+      const passwordErrors = [];
+      const confirmPasswordErrors = [];
 
       if (email.validity.valueMissing) {
-        errors.push('Email is required');
+        emailErrors.push('Email is required');
       }
 
       if (email.validity.typeMismatch) {
-        errors.push('Invalid email')
+        emailErrors.push('Invalid email')
       }
 
       if (email.validity.tooLong) {
-        errors.push('Email is too long (max. 254 characters)')
+        emailErrors.push('Email is too long (max. 254 characters)')
       }
 
       if (password.validity.valueMissing) {
-        errors.push('Password is required');
+        passwordErrors.push('Password is required');
       }
 
       if (password.validity.tooShort) {
-        errors.push('Password is too short (min. 8 characters)');
+        passwordErrors.push('Password is too short (min. 8 characters)');
       }
 
       if (password.validity.tooLong) {
-        errors.push('Password is too long (max. 128 characters)');
+        passwordErrors.push('Password is too long (max. 128 characters)');
       }
 
       if (password.value !== confirmPassword.value) {
-        errors.push('Passwords do not match');
+        confirmPasswordErrors.push('Passwords do not match');
       }
 
-      if (errors.length > 0) {
+      if (confirmPassword.validity.valueMissing) {
+        confirmPasswordErrors.push('Confirm password is required')
+      }
+
+      if (emailErrors.length > 0 || passwordErrors.length > 0 || confirmPasswordErrors.length > 0) {
         e.preventDefault();
-        frontendErrorDiv.style.display = "block";
-        backendErrorDiv.style.display = "none";
-        errors.forEach((err) => {
+        backendErrorsDiv.classList.add('hidden');
+        emailErrors.forEach((err) => {
           const p = document.createElement('p');
           p.textContent = err;
-          frontendErrorDiv.appendChild(p);
+          emailErrorDiv.appendChild(p);
+        })
+
+        passwordErrors.forEach((err) => {
+          const p = document.createElement('p');
+          p.textContent = err;
+          passwordErrorDiv.appendChild(p);
+        })
+
+        confirmPasswordErrors.forEach((err) => {
+          const p = document.createElement('p');
+          p.textContent = err;
+          confirmPasswordErrorDiv.appendChild(p);
         })
       }
     })
-    
+
+    const closeErrorBtn = document.querySelector('.closeErrorBtn');
+    const backendErrorsDiv = document.querySelector('.backendErrors');
+
+    closeErrorBtn.addEventListener('click', () => {
+      backendErrorsDiv.classList.add("hidden");
+    })
   </script>
 </body>
 </html>
