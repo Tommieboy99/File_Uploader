@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Fisto: sign up</title>
+  <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/register.css">
+</head>
+<body>
+  <div class="registerContainer">
+    <header>
+      <a href="/" class="backLink">Back</a>
+      <h1>FISTO</h1>
+    </header>
+    <main>
+      <div class="register">
+        <div class="errorContainer">
+          <h2>Create your account</h2>
+          <div class="frontendErrors">
+          </div>
+          <div class="backendErrors <%= locals.errors ? "" : "hidden" %>">
+              <% if (locals.errors) { %>
+                <% errors.forEach(function(error) { %>
+                  <p> <%= error.msg %></p>
+                <% }) %>
+              <% } %>
+          </div>
+        </div>
+
+        <form action="/auth/register" method="POST" id="form" class="registerForm" novalidate>
+
+          <div class="inputContainer">
+            <label for="email">*Email</label>
+            <input id="email" name="email" placeholder="johndoe@example.com" type="email" required maxlength="254"/>
+          </div>
+
+          <div class="inputContainer">
+            <label for="password">*Password</label>
+            <input id="password" name="password" type="password" required minlength="8" maxlength="128" />
+          </div>
+
+          <div class="inputContainer">
+            <label for="confirmPassword">*Confirm Password</label>
+            <input id="confirmPassword" name="confirmPassword" type="password" required />
+          </div>
+
+          <button type="submit">Sign Up</button>
+        </form>
+        <p>Have an account? <a href="/auth/login" class="loginLink">Log In</a></p>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const email = document.getElementById('email');
+    const password = document.getElementById('password');
+    const confirmPassword = document.getElementById('confirmPassword');
+    const form = document.getElementById('form');
+    const frontendErrorDiv = document.querySelector('.frontendErrors');
+    const backendErrorDiv = document.querySelector('.backendErrors');
+
+    form.addEventListener('submit', (e) => {
+
+      frontendErrorDiv.replaceChildren();
+      const errors = []
+
+      if (email.validity.valueMissing) {
+        errors.push('Email is required');
+      }
+
+      if (email.validity.typeMismatch) {
+        errors.push('Invalid email')
+      }
+
+      if (email.validity.tooLong) {
+        errors.push('Email is too long (max. 254 characters)')
+      }
+
+      if (password.validity.valueMissing) {
+        errors.push('Password is required');
+      }
+
+      if (password.validity.tooShort) {
+        errors.push('Password is too short (min. 8 characters)');
+      }
+
+      if (password.validity.tooLong) {
+        errors.push('Password is too long (max. 128 characters)');
+      }
+
+      if (password.value !== confirmPassword.value) {
+        errors.push('Passwords do not match');
+      }
+
+      if (errors.length > 0) {
+        e.preventDefault();
+        frontendErrorDiv.style.display = "block";
+        backendErrorDiv.style.display = "none";
+        errors.forEach((err) => {
+          const p = document.createElement('p');
+          p.textContent = err;
+          frontendErrorDiv.appendChild(p);
+        })
+      }
+    })
+    
+  </script>
+</body>
+</html>
