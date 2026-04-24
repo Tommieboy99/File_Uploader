@@ -20,7 +20,7 @@
           <div class="backendErrors">
             <div>
               <p> Registration failed: </p>
-              <% errors.map((error) => { %>
+              <% errors.forEach((error) => { %>
                 <p> <%= error.msg %></p>
               <% }) %>
             </div>
@@ -112,7 +112,10 @@
 
       if (emailErrors.length > 0 || passwordErrors.length > 0 || confirmPasswordErrors.length > 0) {
         e.preventDefault();
-        backendErrorsDiv.classList.add('hidden');
+        if (backendErrorsDiv) {
+          backendErrorsDiv.classList.add('hidden');
+        }
+        
         emailErrors.forEach((err) => {
           const p = document.createElement('p');
           p.textContent = err;
@@ -136,9 +139,11 @@
     const closeErrorBtn = document.querySelector('.closeErrorBtn');
     const backendErrorsDiv = document.querySelector('.backendErrors');
 
-    closeErrorBtn.addEventListener('click', () => {
-      backendErrorsDiv.classList.add("hidden");
-    })
+    if (closeErrorBtn) {
+      closeErrorBtn.addEventListener('click', () => {
+        backendErrorsDiv.classList.add("hidden");
+      })
+    }
   </script>
 </body>
 </html>
