@@ -2,6 +2,7 @@ import passport from "passport";
 import { body, matchedData, validationResult } from 'express-validator';
 import { prisma } from "../lib/prisma.js";
 import bcrypt from 'bcryptjs';
+import { Prisma } from "../generated/prisma/index.js";
 
 export const renderRegisterPage = (req, res) => {
     if (req.user) {
@@ -19,7 +20,7 @@ const validateUser = [
     .isLength({ max: 254 }).withMessage("Email is too long (max. 254 characters)")
     .normalizeEmail()
     .custom(async value => {
-        const user = await prisma.user.findFirst({ where: { email: value } })
+        const user = await prisma.user.findUnique({ where: { email: value } })
         if (user) throw new Error("E-mail already in use");
     }),
 
@@ -64,15 +65,19 @@ export const registerUser = [...validateUser,
                     }
                 }
             },
-            include: {
-                folders: true
-            }
         });
-    } catch (err) {
-        console.log(err);
+    } catch (e) {
+        if (e instanceof Prisma.PrismaClientKnownRequestError) {
+            if (e.code === 'P2002') {
+                return res.status(400).render("register", {
+                    errors: [{msg: "E-mail already in use"},]
+                })
+            }
+        }
+        return next(err);
     }
 
-    res.redirect("/auth/login")
+    return res.redirect("/auth/login")
 }]
 
 export const renderLoginPage = (req, res) => {
