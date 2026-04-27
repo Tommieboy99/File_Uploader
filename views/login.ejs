@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Log In</title>
+  <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/login.css">
+</head>
+<body>
+  <div class="loginContainer">
+    <header class="loginHeader">
+      <a href="/" class="homeLink">Home</a>
+      <h1>FISTO</h1>
+    </header>
+    <main class="loginMain">
+      <div class="container">
+        <h2 class="loginMainTitle">Log into your account</h2>
+        <% if (messages.length > 0) { %>
+          <div class="backendErrors">
+            <div>
+              <p><%= messages[0] %></p>
+            </div>
+            <button class="closeErrorBtn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-icon lucide-x">
+                <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+              </svg>
+            </button>
+          </div>
+        <% } %>
+      </div>
+      
+      <form action="/auth/login" method="POST" class="loginForm" novalidate>
+        <div class="inputContainer">
+          <label for="email">Email</label>
+          <div class="fieldError" id="emailError"></div>
+          <input id="email" name="email" type="email" required maxlength="254"/>
+        </div>
+
+        <div class="inputContainer">
+          <label for="password">Password</label>
+          <div class="fieldError" id="passwordError"></div>
+          <input id="password" name="password" type="password" required maxlength="128" minlength="8" />
+        </div>
+
+        <button type="submit" class="loginBtn">Log In</button>
+      </form>
+
+      <p>No account? <a href="/auth/register" class="registerLink">Create one</a></p>
+    </main>
+  </div>
+
+  <script>
+    const email = document.querySelector('#email');
+    const password = document.querySelector('#password');
+    const emailErrorDiv = document.querySelector('#emailError');
+    const passwordErrorDiv = document.querySelector('#passwordError');
+    const form = document.querySelector('.loginForm');
+
+    form.addEventListener('submit', (e) => {
+
+      emailErrorDiv.replaceChildren();
+      passwordErrorDiv.replaceChildren();
+
+      const emailErrors = [];
+      const passwordErrors = [];
+
+      if (email.validity.valueMissing) {
+        emailErrors.push('Email is required');
+      }
+
+      if (email.validity.typeMismatch) {
+        emailErrors.push('Invalid email')
+      }
+
+      if (email.validity.tooLong) {
+        emailErrors.push('Email is too long (max. 254 characters)')
+      }
+
+      if (password.validity.valueMissing) {
+        passwordErrors.push('Password is required');
+      }
+
+      if (password.validity.tooShort) {
+        passwordErrors.push('Password is too short (min. 8 characters)');
+      }
+
+      if (password.validity.tooLong) {
+        passwordErrors.push('Password is too long (max. 128 characters)');
+      }
+
+      if (emailErrors.length > 0 || passwordErrors.length > 0) {
+        e.preventDefault();
+        if (backendErrorsDiv) {
+          backendErrorsDiv.classList.add('hidden');
+        }
+        
+        emailErrors.forEach((err) => {
+          const p = document.createElement('p');
+          p.textContent = err;
+          emailErrorDiv.appendChild(p);
+        })
+
+        passwordErrors.forEach((err) => {
+          const p = document.createElement('p');
+          p.textContent = err;
+          passwordErrorDiv.appendChild(p);
+        })
+      }
+    } )
+
+    const closeErrorBtn = document.querySelector('.closeErrorBtn');
+    const backendErrorsDiv = document.querySelector('.backendErrors');
+
+    if (closeErrorBtn) {
+      closeErrorBtn.addEventListener('click', () => {
+        backendErrorsDiv.classList.add("hidden");
+      })
+    }
+
+  </script>
+</body>
+</html>
