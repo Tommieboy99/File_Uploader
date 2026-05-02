@@ -5,6 +5,7 @@ import { body, validationResult } from "express-validator";
 const validateCreateFolder = [
     body("folderName")
     .trim()
+    .toLowerCase()
     .notEmpty().withMessage("ERROR: Folder name is required")
     .custom(async (value, { req }) => {
         const folder = await prisma.folder.findUnique({
@@ -20,14 +21,15 @@ const validateCreateFolder = [
     })
 ]
 
-export const createFolder = [...validateCreateFolder, async (req, res) => {
+export const createFolder = [...validateCreateFolder, async (req, res, next) => {
     
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-        return res.status(400).redirect("/")
+        req.session.createFolderErrors = errors.array();
+        return res.redirect("/")
     }
-    
+
     try {
         await prisma.folder.create({
             data: {
@@ -39,16 +41,14 @@ export const createFolder = [...validateCreateFolder, async (req, res) => {
         return res.redirect("/")
 
     } catch (e) {
-        console.log(e);
         if (e instanceof Prisma.PrismaClientKnownRequestError) {
             if (e.code === "P2002") {
-                req.session.createFolderError = "Folder name already exists";
+                req.session.createFolderErrors = ['ERROR: Folder name is already taken'];
                 return res.redirect("/");
             }
         } 
 
-        req.session.createFolderError = "Something went wrong";
-        return res.redirect("/");
+        return next(e);
     } 
 }]
 
