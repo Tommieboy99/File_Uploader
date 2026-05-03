@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Fisto: dashboard</title>
+  <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/header.css">
+  <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+<body>
+    <%- include('partials/header') %>
+
+    <main class="main">
+        <div class="fileSection">
+            <h2 class="uploadTitle">Upload</h2>
+            
+            <% if (fileUploadErrors) { %>
+                <div class="serverErrors">
+                    <div>
+                        <% fileUploadErrors.forEach((e) => { %>
+                            <p> <%= e.msg %></p>
+                        <% }) %>
+                    </div>
+                    <button class="closeErrorBtn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-icon lucide-x">
+                            <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+                        </svg>
+                    </button>
+                </div>
+            <% } %> 
+
+            <form action="/file/upload" method="post" enctype="multipart/form-data" class="uploadForm" novalidate>
+
+                <div class="uploadContainer">
+                    <div class="fieldError" id="fileError"></div>
+                    <label for="file" id="fileUploadContainer">
+                        <input type="file" id="file" name="file" required>
+                        <span class="uploadText">Click here to select a file</span>
+                    </label>
+                </div>
+
+                <div class="uploadOptions">
+                    <label class="radio" data-target="opt1">
+                        <input type="radio" id="noFolder" name="uploadOption" value="noFolder" checked>
+                        No folder
+                    </label>
+
+                    <label class="radio" data-target="opt2">
+                        <input type="radio" id="newFolder" name="uploadOption" value="newFolder">
+                        New folder
+                    </label>
+
+                    <% if (folders.length !== 0) { %>
+                        <label class="radio radioRight" data-target="opt3">
+                            <input type="radio" id="selectFolder" name="uploadOption" value="selectFolder">
+                            Select folder
+                        </label>
+                    <% } %>
+                </div>
+
+                <label class="panel" id="opt2">
+                    <div class="fieldError" id="newFolderError"></div>
+                    <input type="text" id="newFolderName" name="newFolderName" placeholder="Folder name" required>
+                </label>
+
+                <label class="panel" id="opt3">
+                    <select name="selectedFolder" id="folders" required>
+                    <% folders.map((folder) => { %>
+                        <option value="<%= folder.id %>"> <%= folder.name %> </option>
+                    <% }) %>
+                    </select>
+                </label>
+                
+                <button type="submit" class="uploadBtn">Upload</button>
+            </form>
+        </div>
+
+        <div class="storageSection">
+            <div class="storageHeaderContainer">
+                <div class="errorMessageContainer">
+                    <div class="storageHeader">
+                        <h2 class="storageTitle">Storage</h2>
+                        <button class="toggleCreateFolderBtn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="folderPlus">
+                                <path d="M12 10v6"/><path d="M9 13h6"/>
+                                <path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/>
+                            </svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="folderMin hidden">
+                                <path d="M9 13h6"/><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <% if (createFolderErrors) { %>
+                    <div class="serverErrors">
+                        <div>
+                            <% createFolderErrors.forEach((e) => { %>
+                                <p> <%= e.msg %></p>
+                            <% }) %>
+                        </div>
+                        <button class="closeErrorBtn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-icon lucide-x">
+                                <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <% } %> 
+                </div>
+                    
+                <form action="/folder/create" method="post" class="createFolderForm hidden" novalidate>
+                    <div class="folderNameInputContainer">
+                        <label for="folderName"></label>
+                        <div class="fieldError" id="createFolderError"></div>
+                        <input type="text" id="createFolderInput" name="folderName" placeholder="Folder name" required>
+                    </div>
+                    <button class="createFolderBtn">Create</button>
+                </form>
+            </div>
+            <% if (rootFiles.length === 0 && folders.length === 0) { %>
+                <p>Your storage is empty. Start uploading files!</p>
+            <% } else { %>
+                <div class="folderOverview">
+                <% rootFiles.map((file) => { %>
+                    <a href="/file/<%=file.id%>" class="file">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-icon lucide-file">
+                            <path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/>
+                        </svg>
+                        <p> <%= file.name %> </p>
+                    </a>
+                <% }) %>
+                <% folders.map((folder) => { %>
+                    <a href="/folder/<%=folder.id%>" class="folder">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/>
+                        </svg>
+                        <%= folder.name %> 
+                    </a>
+                <% }) %>
+            <% } %>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+
+        const fileInput = document.querySelector('#file');
+        const newFolderInput = document.querySelector("#newFolderName")
+        const uploadText = document.querySelector('.uploadText');
+        const uploadForm = document.querySelector(".uploadForm");
+        const fileErrorsDiv = document.querySelector("#fileError");
+        const newFolderErrorsDiv = document.querySelector("#newFolderError")
+        const newFolderRadio = document.querySelector("#newFolder")
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+
+            if (file) {
+                uploadText.textContent = `${file.name}`;
+            } else {
+                uploadText.textContent = 'Click here to select a file'
+            }
+        })
+
+        uploadForm.addEventListener('submit', (e) => {
+            console.log(e.target);
+            fileErrorsDiv.replaceChildren();
+            newFolderErrorsDiv.replaceChildren();
+            const fileErrors = [];
+            const folderErrors = [];
+
+            if (fileInput.validity.valueMissing) {
+                fileErrors.push('File is required')
+            }
+
+            if (newFolderRadio.checked) {
+                if (newFolderInput.validity.valueMissing) {
+                    folderErrors.push('Name is required')
+                }
+            }
+
+            if (fileErrors.length > 0 || folderErrors.length > 0) {
+                e.preventDefault();
+
+                fileErrors.forEach((err) => {
+                    const p = document.createElement("p");
+                    p.textContent = err
+                    fileErrorsDiv.appendChild(p);
+                })
+
+                folderErrors.forEach((err) => {
+                    const p = document.createElement("p");
+                    p.textContent = err
+                    newFolderErrorsDiv.appendChild(p);
+                })
+            }
+
+        })
+
+        const createFolderInput = document.querySelector('#createFolderInput');
+        const createFolderErrorDiv = document.querySelector('#createFolderError');
+        const createFolderForm = document.querySelector(".createFolderForm");
+
+        createFolderForm.addEventListener('submit', (e) => {
+            createFolderErrorDiv.replaceChildren();
+            const createFolderErrors = [];
+
+            if (createFolderInput.validity.valueMissing) {
+                createFolderErrors.push('Name is required');
+            }
+
+            if (createFolderErrors.length > 0) {
+                e.preventDefault();
+                createFolderErrors.forEach((err) => {
+                    const p = document.createElement("p");
+                    p.textContent = err;
+                    createFolderErrorDiv.appendChild(p);
+                })
+            }
+        })
+
+        const uploadOptions = document.querySelector('.uploadOptions');
+        const optionContext = document.querySelectorAll('.panel');
+
+        uploadOptions.addEventListener("click", (e) => {
+            const label = e.target.closest('label');
+            if (!label) return;
+
+            const targetId = label.dataset.target;
+            console.log(targetId)
+
+
+            optionContext.forEach(context => {
+                context.style.display = 'none';
+            })
+
+            const activeContext = document.getElementById(targetId);
+            if (activeContext) {
+                activeContext.style.display = 'flex';
+            }
+        })
+
+        const toggleCreateFolderForm = document.querySelector('.toggleCreateFolderBtn');
+        const plusFolderSvg = document.querySelector(".folderPlus")
+        const minFolderSvg = document.querySelector(".folderMin")
+        const serverErrorsDiv = document.querySelector('.serverErrors');
+
+        
+
+        toggleCreateFolderForm.addEventListener('click' , () => {
+            plusFolderSvg.classList.toggle("hidden");
+            minFolderSvg.classList.toggle("hidden");
+            createFolderForm.classList.toggle("hidden");
+        })
+
+        const createFolderError = document.querySelector('.createFolderError');
+        const closeErrorBtn = document.querySelector('.closeErrorBtn');
+
+        if (closeErrorBtn) {
+            closeErrorBtn.addEventListener('click', () => {
+                serverErrorsDiv.classList.add("hidden");
+            })
+        }
+
+
+
+
+    </script>
+</body>
+</html>
