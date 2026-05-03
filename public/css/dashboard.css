@@ -1,0 +1,257 @@
+body {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: 1.5rem;
+    background: radial-gradient(circle, rgba(4, 84, 181, 1) 0%, rgba(1, 60, 115, 1) 100%);
+}
+
+.main {
+    padding-inline: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+    gap: 2rem;
+    color: white;
+}
+
+.fileSection {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+    max-width: 620px;
+}
+
+.uploadTitle,
+.storageTitle {
+    font-size: var(--fs-h2);
+    font-weight: unset;
+}
+
+.uploadForm {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+#fileUploadContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px dashed white;
+    padding: 2rem;
+}
+
+.fieldError:empty {
+    display: none;
+}
+
+.fieldError {
+    color: #ff6b6b;
+}
+
+.uploadBtn:hover,
+.radio:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(1, 60, 115, 0.4);
+}
+.uploadContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+input[type="file"],
+input[type="radio"] {
+    display: none;
+}
+
+.uploadOptions {
+    display: flex;
+    gap: 4px;
+    width: 100%;
+}
+
+.radio {
+    cursor: pointer;
+    border: 1px solid white;
+    user-select: none;
+    flex: 1;
+    padding: 0.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+input,
+select {
+    padding: 0.5rem;
+    border: 1px solid white;
+    background: none;
+    color: white;
+}
+
+input {
+    width: 100%;
+}
+
+.storageHeaderContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.createFolderContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+input:focus,
+select:focus {
+    outline: none;
+    border-color: white;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
+}
+
+input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+    font-style: italic;
+}
+
+select {
+    background-color: #02448a;
+}
+
+.uploadBtn {
+    padding: 0.5rem;
+    background: none;
+    border: 1px solid white;
+    cursor: pointer;
+    color: white;
+}
+
+.radio:has(input:checked) {
+    font-weight: bold;
+}
+
+#opt2,
+#opt3 {
+    display: none;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.storageSection {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+    max-width: 1000px;
+}
+
+.folderOverview {
+    border: 1px solid white;
+    border-bottom: none;
+}
+
+.file,
+.folder {
+    border-bottom: 1px solid white;
+    padding: 0.5rem 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem
+}
+
+svg {
+    flex-shrink: 0;
+}
+
+
+.storageHeader {
+    display: flex;
+    justify-content: space-between;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.createFolderForm {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.folderNameInputContainer {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.errorMessageContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.serverErrors {
+    padding-left: 0.2rem;
+    color: #ff6b6b;
+    border: 1px solid #ff6b6b;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.closeErrorBtn {
+    border: none;
+    background: none;
+    color: #ff6b6b;
+    padding: 0.5rem;
+}
+
+.createFolderInput {
+    width: 100%;
+}
+
+.toggleCreateFolderBtn {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+}
+
+.createFolderBtn {
+    background: none;
+    border: 1px solid white;
+    color: white;
+    cursor: pointer;
+    padding: 0.5rem;
+    align-self: end;
+}
+
+/* FOOTER STYLES */
+
+.footer {
+    padding: 1rem 0rem;
+    background-color: black;
+    color: white;
+    text-align: center;
+}
+
+.createFolderBackendError:empty {
+    display: none;
+}
+
+@media (min-width: 1000px) {
+    .main {
+        flex-direction: row;
+        align-items: unset; 
+        justify-content: center;
+    }
+}
