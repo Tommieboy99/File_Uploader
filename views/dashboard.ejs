@@ -33,39 +33,29 @@
             <form action="/file/upload" method="post" enctype="multipart/form-data" class="uploadForm" novalidate>
 
                 <div class="uploadContainer">
-                    <div class="fieldError" id="fileError"></div>
-                    <label for="file">
-                        <input type="file" id="file" name="file" required>
-                    </label>
+                    <div class="fieldError" id="fileErrors"></div>
+                    <input type="file" id="file" name="file" required>
                 </div>
 
-                <div class="uploadOptions">
-                    <label class="radio">
-                        <input type="radio" name="uploadOption" value="noFolder" checked>
-                        No folder
-                    </label>
+                <fieldset class="uploadOptions">
+                    <legend>Upload options</legend>
 
-                    <label class="radio">
-                        <input type="radio" name="uploadOption" value="newFolder">
-                        New folder
-                    </label>
-
+                    <label class="radio"><input type="radio" name="uploadOption" value="noFolder" checked>No folder</label>
+                    <label class="radio"><input type="radio" name="uploadOption" value="newFolder">New folder</label>
                     <% if (folders.length !== 0) { %>
-                        <label class="radio radioRight">
-                            <input type="radio" name="uploadOption" value="selectFolder">
-                            Select folder
-                        </label>
+                        <label class="radio"><input type="radio" name="uploadOption" value="selectFolder">Select folder</label>
                     <% } %>
-                </div>
+                </fieldset>
 
                 <div class="uploadOptionContent" data-option="newFolder">
-                    <div class="fieldError" id="newFolderError"></div>
-                    <input type="text" id="newFolderName" name="newFolderName" placeholder="Folder name" required>
+                    <div class="fieldError" id="newFolderErrors"></div>
+                    <input type="text" id="newFolderName" name="newFolderName" placeholder="Folder name">
                 </div>
 
                 <div class="uploadOptionContent" data-option="selectFolder">
-                    <select name="selectedFolder" id="folders" required>
-                    <% folders.map((folder) => { %>
+                    <div class="fieldError" id="selectFolderErrors"></div>
+                    <select name="selectedFolder" id="folders">
+                    <% folders.forEach((folder) => { %>
                         <option value="<%= folder.id %>"> <%= folder.name %> </option>
                     <% }) %>
                     </select>
@@ -140,31 +130,31 @@
     </main>
     
     <script>
+        const uploadForm = document.querySelector(".uploadForm");
+        const fileErrorsDiv = document.querySelector("#fileErrors");
+        const newFolderErrorsDiv = document.querySelector("#newFolderErrors")
+        const selectFolderErrorsDiv = document.querySelector('#selectFolderErrorsDiv');
 
         const fileInput = document.querySelector('#file');
         const newFolderInput = document.querySelector("#newFolderName")
-        const uploadText = document.querySelector('.uploadText');
-        const uploadForm = document.querySelector(".uploadForm");
-        const fileErrorsDiv = document.querySelector("#fileError");
-        const newFolderErrorsDiv = document.querySelector("#newFolderError")
-        const newFolderRadio = document.querySelector("#newFolder")
 
         uploadForm.addEventListener('submit', (e) => {
-            console.log(e.target);
             fileErrorsDiv.replaceChildren();
             newFolderErrorsDiv.replaceChildren();
+            selectFolderErrorsDiv.replaceChildren();
+
             const fileErrors = [];
-            const folderErrors = [];
+            const newFolderErrors = [];
+            const selectFolderErrors = [];
 
             if (fileInput.validity.valueMissing) {
                 fileErrors.push('File is required')
             }
 
-            if (newFolderRadio.checked) {
-                if (newFolderInput.validity.valueMissing) {
-                    folderErrors.push('Name is required')
-                }
+            if (newFolderInput.validity.valueMissing) {
+                    newFolderErrors.push('Name is required')
             }
+            
 
             if (fileErrors.length > 0 || folderErrors.length > 0) {
                 e.preventDefault();
@@ -210,7 +200,15 @@
 
         function handleRadioChange(value) {
             document.querySelectorAll('.uploadOptionContent').forEach(el => {
-                el.style.display = el.dataset.option === value ? 'flex' : 'none';
+                const isActive = el.dataset.option === value;
+
+                el.style.display = isActive ? 'flex' : 'none';
+
+                el.querySelectorAll('input, select').forEach(field => {
+                    field.required = isActive;
+                    field.disabled = !isActive;
+                    
+                })
             })
         }
 
