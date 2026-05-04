@@ -54,7 +54,7 @@
 
                 <div class="uploadOptionContent" data-option="selectFolder">
                     <div class="fieldError" id="selectFolderErrors"></div>
-                    <select name="selectedFolder" id="folders" required>
+                    <select name="selectedFolder" id="selectedFolder" required>
                     <% folders.forEach((folder) => { %>
                         <option value="<%= folder.id %>"> <%= folder.name %> </option>
                     <% }) %>
@@ -133,45 +133,52 @@
         const uploadForm = document.querySelector(".uploadForm");
         const fileErrorsDiv = document.querySelector("#fileErrors");
         const newFolderErrorsDiv = document.querySelector("#newFolderErrors")
-        const selectFolderErrorsDiv = document.querySelector('#selectFolderErrorsDiv');
+        const selectFolderErrorsDiv = document.querySelector('#selectFolderErrors');
 
-        const fileInput = document.querySelector('#file');
-        const newFolderInput = document.querySelector("#newFolderName")
-
-        uploadForm.addEventListener('submit', (e) => {
+        function renderErrors() {
             fileErrorsDiv.replaceChildren();
             newFolderErrorsDiv.replaceChildren();
             selectFolderErrorsDiv.replaceChildren();
 
-            const fileErrors = [];
-            const newFolderErrors = [];
-            const selectFolderErrors = [];
+            const fileInput = document.querySelector('#file');
+            const newFolderInput = document.querySelector("#newFolderName")
+            const folderSelect = document.querySelector('#selectedFolder')
+            const option = document.querySelector('input[name="uploadOption"]:checked').value;
 
             if (fileInput.validity.valueMissing) {
-                fileErrors.push('File is required')
+                const p = document.createElement("p");
+                p.textContent = 'File is required'
+                fileErrorsDiv.appendChild(p);
             }
 
-            if (newFolderInput.validity.valueMissing) {
-                    newFolderErrors.push('Name is required')
-            }
-            
-
-            if (fileErrors.length > 0 || folderErrors.length > 0) {
-                e.preventDefault();
-
-                fileErrors.forEach((err) => {
+            if (option === 'newFolder') {
+                if (newFolderInput.validity.valueMissing) {
                     const p = document.createElement("p");
-                    p.textContent = err
-                    fileErrorsDiv.appendChild(p);
-                })
-
-                folderErrors.forEach((err) => {
-                    const p = document.createElement("p");
-                    p.textContent = err
+                    p.textContent = 'Folder name is required'
                     newFolderErrorsDiv.appendChild(p);
-                })
+                }
+
+                if (newFolderInput.validity.tooShort) {
+                    const p = document.createElement("p");
+                    p.textContent = 'Folder name needs to have at least 1 character'
+                    newFolderErrorsDiv.appendChild(p);
+                }
             }
 
+            if (option === 'selectFolder' && folderSelect.validity.valueMissing) {
+                const p = document.createElement("p");
+                p.textContent = 'Please select a folder'
+                selectFolderErrorsDiv.appendChild(p);
+            }
+ 
+
+        }
+
+        uploadForm.addEventListener('submit', (e) => {
+            if (!uploadForm.checkValidity()) {
+                e.preventDefault();
+                renderErrors();
+            }
         })
 
         const uploadRadios = document.querySelectorAll('input[name="uploadOption"]');
