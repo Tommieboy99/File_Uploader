@@ -34,43 +34,42 @@
 
                 <div class="uploadContainer">
                     <div class="fieldError" id="fileError"></div>
-                    <label for="file" id="fileUploadContainer">
+                    <label for="file">
                         <input type="file" id="file" name="file" required>
-                        <span class="uploadText">Click here to select a file</span>
                     </label>
                 </div>
 
                 <div class="uploadOptions">
-                    <label class="radio" data-target="opt1">
-                        <input type="radio" id="noFolder" name="uploadOption" value="noFolder" checked>
+                    <label class="radio">
+                        <input type="radio" name="uploadOption" value="noFolder" checked>
                         No folder
                     </label>
 
-                    <label class="radio" data-target="opt2">
-                        <input type="radio" id="newFolder" name="uploadOption" value="newFolder">
+                    <label class="radio">
+                        <input type="radio" name="uploadOption" value="newFolder">
                         New folder
                     </label>
 
                     <% if (folders.length !== 0) { %>
-                        <label class="radio radioRight" data-target="opt3">
-                            <input type="radio" id="selectFolder" name="uploadOption" value="selectFolder">
+                        <label class="radio radioRight">
+                            <input type="radio" name="uploadOption" value="selectFolder">
                             Select folder
                         </label>
                     <% } %>
                 </div>
 
-                <label class="panel" id="opt2">
+                <div class="uploadOptionContent" data-option="newFolder">
                     <div class="fieldError" id="newFolderError"></div>
                     <input type="text" id="newFolderName" name="newFolderName" placeholder="Folder name" required>
-                </label>
+                </div>
 
-                <label class="panel" id="opt3">
+                <div class="uploadOptionContent" data-option="selectFolder">
                     <select name="selectedFolder" id="folders" required>
                     <% folders.map((folder) => { %>
                         <option value="<%= folder.id %>"> <%= folder.name %> </option>
                     <% }) %>
                     </select>
-                </label>
+                </div>
                 
                 <button type="submit" class="uploadBtn">Upload</button>
             </form>
@@ -109,7 +108,6 @@
                     
                 <form action="/folder/create" method="post" class="createFolderForm hidden" novalidate>
                     <div class="folderNameInputContainer">
-                        <label for="folderName"></label>
                         <div class="fieldError" id="createFolderError"></div>
                         <input type="text" id="createFolderInput" name="folderName" placeholder="Folder name" required>
                     </div>
@@ -150,16 +148,6 @@
         const fileErrorsDiv = document.querySelector("#fileError");
         const newFolderErrorsDiv = document.querySelector("#newFolderError")
         const newFolderRadio = document.querySelector("#newFolder")
-
-        fileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-
-            if (file) {
-                uploadText.textContent = `${file.name}`;
-            } else {
-                uploadText.textContent = 'Click here to select a file'
-            }
-        })
 
         uploadForm.addEventListener('submit', (e) => {
             console.log(e.target);
@@ -218,26 +206,26 @@
             }
         })
 
-        const uploadOptions = document.querySelector('.uploadOptions');
-        const optionContext = document.querySelectorAll('.panel');
+        const uploadRadios = document.querySelectorAll('input[name="uploadOption"]');
 
-        uploadOptions.addEventListener("click", (e) => {
-            const label = e.target.closest('label');
-            if (!label) return;
-
-            const targetId = label.dataset.target;
-            console.log(targetId)
-
-
-            optionContext.forEach(context => {
-                context.style.display = 'none';
+        function handleRadioChange(value) {
+            document.querySelectorAll('.uploadOptionContent').forEach(el => {
+                el.style.display = el.dataset.option === value ? 'flex' : 'none';
             })
+        }
 
-            const activeContext = document.getElementById(targetId);
-            if (activeContext) {
-                activeContext.style.display = 'flex';
-            }
+        uploadRadios.forEach(radio => {
+            radio.addEventListener("change", (e) => {
+                handleRadioChange(e.target.value);
+            })
         })
+
+        const checked = document.querySelector('input[name="uploadOption"]:checked')
+
+        if (checked) {
+            handleRadioChange(checked.value);
+        }
+
 
         const toggleCreateFolderForm = document.querySelector('.toggleCreateFolderBtn');
         const plusFolderSvg = document.querySelector(".folderPlus")

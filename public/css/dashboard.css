@@ -50,20 +50,29 @@ body {
     color: #ff6b6b;
 }
 
-.uploadBtn:hover,
-.radio:hover{
+.uploadBtn:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(1, 60, 115, 0.4);
 }
+
 .uploadContainer {
     display: flex;
     flex-direction: column;
     gap: 0.3rem;
 }
 
-input[type="file"],
-input[type="radio"] {
-    display: none;
+input[type=file] {
+    padding: 2rem;
+    border: 1px dashed white;
+}
+
+input[type=file]::file-selector-button {
+    border: 1px solid white;
+    background: none;
+    padding: 0.3rem 0.5rem;
+    color: white;
+    margin-right: 1rem;
+    cursor: pointer;
 }
 
 .uploadOptions {
@@ -72,8 +81,15 @@ input[type="radio"] {
     width: 100%;
 }
 
+input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
 .radio {
     cursor: pointer;
+    position: relative;
     border: 1px solid white;
     user-select: none;
     flex: 1;
@@ -84,11 +100,26 @@ input[type="radio"] {
     text-align: center;
 }
 
-input,
+.radio:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(1, 60, 115, 0.4);
+}
+
+.radio:has(input:checked) {
+    font-weight: bold;
+}
+
 select {
     padding: 0.5rem;
     border: 1px solid white;
     background: none;
+    color: white;
+}
+
+input[type='text'] {
+    background: none;
+    border: 1px solid white;
+    padding: 0.5rem;
     color: white;
 }
 
@@ -132,16 +163,8 @@ select {
     color: white;
 }
 
-.radio:has(input:checked) {
-    font-weight: bold;
-}
 
-#opt2,
-#opt3 {
-    display: none;
-    flex-direction: column;
-    gap: 0.3rem;
-}
+
 
 .storageSection {
     display: flex;
