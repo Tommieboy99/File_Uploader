@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Fisto: sign up</title>
-  <link rel="stylesheet" href="/css/global.css">
   <link rel="stylesheet" href="/css/register.css">
+  <link rel="stylesheet" href="/css/typography.css">
 </head>
 <body>
   <div class="registerContainer">
@@ -32,22 +32,22 @@
           </div>
         <% } %>
       </div>
-      <form action="/auth/register" method="POST" id="form" class="registerForm" novalidate>
+      <form action="/auth/register" method="POST" id="form" novalidate>
         <div class="inputContainer">
-          <label for="email">*Email</label>
-          <div class="fieldError" id="emailError"></div>
-          <input id="email" type="email" name="email" placeholder="johndoe@example.com" required maxlength="254"/>
+          <p class="errorMessage"></p>
+          <label for="email">Email</label>
+          <input type="email" name="email" placeholder="johndoe@example.com" required/>
         </div>
         
         <div class="inputContainer">
-          <label for="password">*Password</label>
-          <div class="fieldError" id="passwordError"></div>
-          <input id="password" name="password" type="password" required minlength="8" maxlength="128" />
+          <p class="errorMessage"></p>
+          <label for="password">Password</label>
+          <input id="password" name="password" type="password" required minlength="8"/>
         </div>
 
         <div class="inputContainer">
-          <label for="confirmPassword">*Confirm Password</label>
-          <div class="fieldError" id="confirmPasswordError"></div>
+          <p class="errorMessage"></p>
+          <label for="confirmPassword">Confirm Password</label>
           <input id="confirmPassword" name="confirmPassword" type="password" required />
         </div>
 
@@ -59,82 +59,69 @@
   </div>
 
   <script>
-    const email = document.getElementById('email');
-    const password = document.getElementById('password');
-    const confirmPassword = document.getElementById('confirmPassword');
     const form = document.getElementById('form');
-
-    const emailErrorDiv = document.querySelector('#emailError');
-    const passwordErrorDiv = document.querySelector('#passwordError');
-    const confirmPasswordErrorDiv = document.querySelector('#confirmPasswordError');
 
     form.addEventListener('submit', (e) => {
 
-      emailErrorDiv.replaceChildren();
-      passwordErrorDiv.replaceChildren();
-      confirmPasswordErrorDiv.replaceChildren();
+      form.querySelectorAll(".error").forEach(el => el.textContent = "");
+      form.querySelectorAll("input").forEach(el => el.classList.remove("error"));
 
-      const emailErrors = [];
-      const passwordErrors = [];
-      const confirmPasswordErrors = [];
+      const email = form.elements.email
+      const password = form.elements.password
+      const confirmPassword = form.elements.confirmPassword
 
-      if (email.validity.valueMissing) {
-        emailErrors.push('Email is required');
+      let hasError = false;
+
+      if (!email.checkValidity()) {
+        hasError = true;
+
+        if (email.validity.valueMissing) {
+          showError(email, 'Email is required')
+        }
+
+        if (email.validity.typeMismatch) {
+          showError(email, 'Invalid email')
+        }
       }
 
-      if (email.validity.typeMismatch) {
-        emailErrors.push('Invalid email')
+      if (!password.checkValidity()) {
+        hasError = true;
+
+        if (password.validity.valueMissing) {
+          showError(password, 'Password is required');
+        }
+
+        if (password.validity.tooShort) {
+          showError(password, 'Password is too short (min. 8 characters)');
+        }
       }
 
-      if (email.validity.tooLong) {
-        emailErrors.push('Email is too long (max. 254 characters)')
-      }
+      if (!confirmPassword.checkValidity()) {
+        hasError = true;
 
-      if (password.validity.valueMissing) {
-        passwordErrors.push('Password is required');
-      }
-
-      if (password.validity.tooShort) {
-        passwordErrors.push('Password is too short (min. 8 characters)');
-      }
-
-      if (password.validity.tooLong) {
-        passwordErrors.push('Password is too long (max. 128 characters)');
+        if (confirmPassword.validity.valueMissing) {
+          showError(confirmPassword, 'Confirm password is required')
+        }
       }
 
       if (password.value !== confirmPassword.value) {
-        confirmPasswordErrors.push('Passwords do not match');
+        hasError = true;
+
+        showError(confirmPassword, 'Passwords do not match');
       }
 
-      if (confirmPassword.validity.valueMissing) {
-        confirmPasswordErrors.push('Confirm password is required')
-      }
-
-      if (emailErrors.length > 0 || passwordErrors.length > 0 || confirmPasswordErrors.length > 0) {
+      if (hasError) {
         e.preventDefault();
-        if (backendErrorsDiv) {
-          backendErrorsDiv.classList.add('hidden');
-        }
-        
-        emailErrors.forEach((err) => {
-          const p = document.createElement('p');
-          p.textContent = err;
-          emailErrorDiv.appendChild(p);
-        })
-
-        passwordErrors.forEach((err) => {
-          const p = document.createElement('p');
-          p.textContent = err;
-          passwordErrorDiv.appendChild(p);
-        })
-
-        confirmPasswordErrors.forEach((err) => {
-          const p = document.createElement('p');
-          p.textContent = err;
-          confirmPasswordErrorDiv.appendChild(p);
-        })
       }
+
     })
+
+    function showError(input, message) {
+      const field = input.closest('.inputContainer');
+      const errorEl = field.querySelector('.errorMessage');
+
+      errorEl.textContent = message;
+    }
 
     const closeErrorBtn = document.querySelector('.closeErrorBtn');
     const backendErrorsDiv = document.querySelector('.backendErrors');
