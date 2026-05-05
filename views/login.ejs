@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Log In</title>
-  <link rel="stylesheet" href="/css/global.css">
   <link rel="stylesheet" href="/css/login.css">
+  <link rel="stylesheet" href="/css/typography.css">
 </head>
 <body>
   <div class="loginContainer">
@@ -19,6 +19,7 @@
         <% if (messages.length > 0) { %>
           <div class="backendErrors">
             <div>
+              <p>Login failed:</p>
               <p><%= messages[0] %></p>
             </div>
             <button class="closeErrorBtn">
@@ -32,14 +33,14 @@
       
       <form action="/auth/login" method="POST" class="loginForm" novalidate>
         <div class="inputContainer">
-          <label for="email">Email</label>
           <div class="fieldError" id="emailError"></div>
+          <label for="email">Email</label>
           <input id="email" name="email" type="email" required maxlength="254"/>
         </div>
 
         <div class="inputContainer">
-          <label for="password">Password</label>
           <div class="fieldError" id="passwordError"></div>
+          <label for="password">Password</label>
           <input id="password" name="password" type="password" required maxlength="128" minlength="8" />
         </div>
 

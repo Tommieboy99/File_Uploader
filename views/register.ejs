@@ -62,9 +62,12 @@
     const form = document.getElementById('form');
 
     form.addEventListener('submit', (e) => {
+      e.preventDefault();
 
-      form.querySelectorAll(".error").forEach(el => el.textContent = "");
-      form.querySelectorAll("input").forEach(el => el.classList.remove("error"));
+      const backendErrors = document.querySelector('.backendErrors')
+      if (backendErrors) backendErrors.classList.add('hidden')
+
+      form.querySelectorAll(".errorMessage").forEach(el => el.textContent = "");
 
       const email = form.elements.email
       const password = form.elements.password
@@ -77,9 +80,7 @@
 
         if (email.validity.valueMissing) {
           showError(email, 'Email is required')
-        }
-
-        if (email.validity.typeMismatch) {
+        } else if (email.validity.typeMismatch) {
           showError(email, 'Invalid email')
         }
       }
@@ -89,31 +90,22 @@
 
         if (password.validity.valueMissing) {
           showError(password, 'Password is required');
-        }
-
-        if (password.validity.tooShort) {
+        } else if (password.validity.tooShort) {
           showError(password, 'Password is too short (min. 8 characters)');
         }
       }
 
-      if (!confirmPassword.checkValidity()) {
+      if (confirmPassword.validity.valueMissing) {
         hasError = true;
-
-        if (confirmPassword.validity.valueMissing) {
-          showError(confirmPassword, 'Confirm password is required')
-        }
-      }
-
-      if (password.value !== confirmPassword.value) {
+        showError(confirmPassword, 'Confirm password is required')
+      } else if (password.value !== confirmPassword.value) {
         hasError = true;
-
         showError(confirmPassword, 'Passwords do not match');
       }
 
-      if (hasError) {
-        e.preventDefault();
+      if (!hasError) {
+        form.submit();
       }
-
     })
 
     function showError(input, message) {

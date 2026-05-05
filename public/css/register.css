@@ -62,6 +62,7 @@ body {
 .inputContainer {
     display: flex;
     flex-direction: column;
+    gap: 0.15rem;
 }
 
 input {
@@ -69,7 +70,6 @@ input {
     border: 1px solid white;
     background: none;
     color: white;
-    margin-top: 0.2rem;
 }
 
 input::placeholder {
@@ -101,7 +101,16 @@ input:focus {
     border: none;
     background: none;
     color: #ff6b6b;
-    padding: 0.5rem;
+    cursor: pointer;
+}
+
+svg {
+    display: block;
+}
+
+input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+    font-style: italic;
 }
 
 .createAccountBtn {
@@ -130,10 +139,3 @@ input:focus {
     box-shadow: 0 8px 20px rgba(1, 60, 115, 0.4);
 }
 
-.fieldError:empty {
-    display: none;
-}
-
-.fieldError {
-    color: #ff6b6b;
-}
