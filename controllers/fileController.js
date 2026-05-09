@@ -6,6 +6,7 @@ import { body, matchedData, validationResult } from 'express-validator';
 import { v2 as cloudinary } from 'cloudinary'
 import { FileTypeError } from '../errors/FileTypeError.js';
 import { isAuthenticated } from './authController.js';
+import fs from "fs";
 
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -23,7 +24,11 @@ const uploadImage = async (imagePath) => {
         const result = await cloudinary.uploader.upload(imagePath, options);
         return result;
     } catch (error) {
-        return console.log(error);
+        console.log(error);
+    } finally {
+        fs.unlink(imagePath, (err) => {
+            if (err) console.log(err);
+        })
     }
 }
 
@@ -179,72 +184,12 @@ export const fileUpload = [isAuthenticated, upload.single('uploaded_file'), ...v
 
 }]
 
-
-
-
-
-
-export const uploadFile = [upload.single('uploaded_file'), , async (req, res) => {
-    const errors = validationResult(req);
-
-    if (!errors.isEmpty()) {
-        req.session.fileUploadErrors = errors.array();
-        return res.redirect("/")
-    }
-
-
-    if (uploadOption === "noFolder") {
-        const root = await prisma.folder.findFirst({
-            where: {
-                userId: req.user.id,
-                isRoot: true
-            }
-        })
-
-        await prisma.file.create({
-            data: {
-                name: req.file.originalname,
-                size: req.file.size,
-                folderId: root.id
-            },
-        });
-
-    } else if (uploadOption === "newFolder") {
-        await prisma.folder.create({
-            data: {
-                name: newFolderName,
-                userId: req.user.id,
-                files: {
-                    create: {
-                        name: req.file.originalname,
-                        size: req.file.size
-                    }
-                }
-            }
-        })
-
-    } else if (uploadOption === "selectFolder") {
-        await prisma.file.create({
-            data: {
-                name: req.file.originalname,
-                size: req.file.size,
-                folderId: Number(selectedFolder)
-            }
-        })
-    }
-
-    res.redirect("/")
-}]
-
 export const renderFilePage = async (req, res) => {
     const file = await prisma.file.findUnique({
         where: {
             id: Number(req.params.fileId)
         }
     })
-
-    console.log(file);
-
 
     res.render("file", { file, user: req.user})
 }
