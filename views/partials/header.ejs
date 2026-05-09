@@ -1,0 +1,9 @@
+<header class="header">
+    <h1>FISTO</h1>
+
+    <% if (!user) { %>
+        <a href="/auth/login" class="authLink">Log In</a>
+    <% } else { %>
+        <a href="/auth/logout" class="authLink">Log Out</a>
+    <% } %>
+</header>
