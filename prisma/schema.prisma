@@ -17,10 +17,7 @@ model User {
   email         String    @unique
   password      String
 
-  folders       Folder[]  @relation("UserFolders")
-
-  rootFolderId  Int       @unique
-  rootFolder    Folder    @relation("UserRoot", fields: [rootFolderId], references: [id])
+  folders       Folder[] 
 } 
 
 model Session {
@@ -33,13 +30,14 @@ model Session {
 model Folder {
   id          Int       @id @default(autoincrement())
   name        String  
-  createdAt   DateTime  @default(now()) 
-  files       File[]
+  createdAt   DateTime  @default(now())
+
+  isRoot      Boolean   @default(false) 
 
   userId      Int
-  user        User      @relation("UserFolders", fields: [userId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  rootForUser User?     @relation("UserRoot")
+  files       File[]
 
   @@unique([name, userId])
 }
@@ -49,6 +47,9 @@ model File {
   name        String    
   size        Int
   createdAt   DateTime  @default(now())
+
+  public_id   String
+  url         String
 
   folderId    Int
   folder      Folder    @relation(fields: [folderId], references: [id], onDelete: Cascade)
