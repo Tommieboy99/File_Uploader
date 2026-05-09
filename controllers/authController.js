@@ -3,6 +3,7 @@ import { body, matchedData, validationResult } from 'express-validator';
 import { prisma } from "../lib/prisma.js";
 import bcrypt from 'bcryptjs';
 import { Prisma } from "../generated/prisma/index.js";
+import { NotAuthError } from "../errors/NotAuthError.js";
 
 export const renderRegisterPage = (req, res) => {
     if (req.user) {
@@ -99,9 +100,16 @@ export const authenticateUser = passport.authenticate("local", {
 
 export const logoutUser = (req, res, next) => {
     req.logout((err) => {
-        if (err)
-            return next(err);
+        if (err) return next(err);
+        return res.redirect("/");
     })
-    res.redirect("/");
+}
+
+export const isAuthenticated = (req, res, next) => {
+    if (!req.user) {
+        throw new NotAuthError("You are not logged in")
+    }
+
+    next();
 }
 
