@@ -1,21 +1,51 @@
+import dotenv from 'dotenv';
+dotenv.config();
 import multer from 'multer';
 import { prisma } from '../lib/prisma.js';
 import { body, matchedData, validationResult } from 'express-validator';
+import { v2 as cloudinary } from 'cloudinary'
+import { FileTypeError } from '../errors/FileTypeError.js';
+import { isAuthenticated } from './authController.js';
 
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, './public/uploads')
-    },
-    filename: function (req, file, cb) {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
-        cb(null, file.fieldname + '-' + uniqueSuffix)
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+})
+
+const uploadImage = async (imagePath) => {
+    const options = {
+        folder: "fisto",
+        public_id: crypto.randomUUID()
+    }
+
+    try {
+        const result = await cloudinary.uploader.upload(imagePath, options);
+        return result;
+    } catch (error) {
+        return console.log(error);
+    }
+}
+
+const upload = multer({
+    dest: "uploads/",
+    limits: {
+        fileSize: 10 * 1024 * 1024,
+        files: 1
+    }, 
+    fileFilter: (req, file, cb) => {
+        const allowed = ["image/jpeg", "image/png", "image/webp"];
+
+        if (!allowed.includes(file.mimetype)) {
+            return cb(new FileTypeError('Only images allowed'), false)
+        }
+
+        cb(null, true)
     }
 })
 
-const upload = multer({storage: storage});
-
-const validateFileUpload = [
-    body("file")
+const validateUpload = [
+    body("uploaded_file")
     .custom((_, {req}) => {
         if (!req.file) throw new Error("File is required")
         return true
@@ -53,7 +83,7 @@ const validateFileUpload = [
             }
         });
 
-        if (exists) throw new Error("Duplicate file name");
+        if (exists) throw new Error("A file with this name already exists");
 
         return true;
     }),
@@ -73,7 +103,7 @@ const validateFileUpload = [
             }
         })
 
-        if (folder) throw new Error('Folder name is already taken')
+        if (folder) throw new Error('A folder with this name already exists')
     }),
 
     body("selectedFolder")
@@ -85,12 +115,76 @@ const validateFileUpload = [
             where: { id: Number(value), userId: req.user.id }
         });
 
-        if (!folder) throw new Error("Folder does not exist")
+        if (!folder) throw new Error("The selected folder does not exist")
     })
 
 ]
 
-export const uploadFile = [upload.single('file'), ...validateFileUpload, async (req, res) => {
+export const fileUpload = [isAuthenticated, upload.single('uploaded_file'), ...validateUpload, async (req, res) => {
+
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).render("errors", { errors: errors.array() })
+    }
+    const result = await uploadImage(req.file.path)
+    const publicId = result.public_id;
+    const url = result.secure_url;
+
+    const { uploadOption, newFolderName, selectedFolder } = matchedData(req);
+
+    if (uploadOption === "noFolder") {
+        const root = await prisma.folder.findFirst({
+            where: {
+                userId: req.user.id,
+                isRoot: true
+            }
+        })
+
+        await prisma.file.create({
+            data: {
+                name: req.file.originalname,
+                size: req.file.size,
+                public_id: publicId,
+                url: url,
+                folderId: root.id
+            },
+        });
+    } else if (uploadOption === "newFolder") {
+        await prisma.folder.create({
+            data: {
+                name: newFolderName,
+                userId: req.user.id,
+                files: {
+                    create: {
+                        name: req.file.originalname,
+                        size: req.file.size,
+                        public_id: publicId,
+                        url: url
+                    }
+                }
+            }
+        })
+
+    } else if (uploadOption === "selectFolder") {
+        await prisma.file.create({
+            data: {
+                name: req.file.originalname,
+                size: req.file.size,
+                public_id: publicId,
+                url: url,
+                folderId: Number(selectedFolder)
+            }
+        })
+    }
+
+}]
+
+
+
+
+
+
+export const uploadFile = [upload.single('uploaded_file'), , async (req, res) => {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
@@ -98,7 +192,6 @@ export const uploadFile = [upload.single('file'), ...validateFileUpload, async (
         return res.redirect("/")
     }
 
-    const { uploadOption, newFolderName, selectedFolder } = matchedData(req);
 
     if (uploadOption === "noFolder") {
         const root = await prisma.folder.findFirst({
@@ -142,5 +235,18 @@ export const uploadFile = [upload.single('file'), ...validateFileUpload, async (
 
     res.redirect("/")
 }]
+
+export const renderFilePage = async (req, res) => {
+    const file = await prisma.file.findUnique({
+        where: {
+            id: Number(req.params.fileId)
+        }
+    })
+
+    console.log(file);
+
+
+    res.render("file", { file, user: req.user})
+}
 
 
