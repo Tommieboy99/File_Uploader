@@ -4,9 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Fisto: dashboard</title>
-  <link rel="stylesheet" href="/css/global.css">
   <link rel="stylesheet" href="/css/header.css">
   <link rel="stylesheet" href="/css/dashboard.css">
+  <link rel="stylesheet" href="/css/typography.css">
 </head>
 <body>
     <%- include('partials/header') %>
@@ -34,7 +34,7 @@
 
                 <div class="uploadContainer">
                     <div class="fieldError" id="fileErrors"></div>
-                    <input type="file" id="file" name="file" required>
+                    <input type="file" id="file" name="uploaded_file" required>
                 </div>
 
                 <fieldset class="uploadOptions">
@@ -49,7 +49,7 @@
 
                 <div class="uploadOptionContent" data-option="newFolder">
                     <div class="fieldError" id="newFolderErrors"></div>
-                    <input type="text" id="newFolderName" name="newFolderName" placeholder="Folder name" required minlength="1">
+                    <input type="text" id="newFolderName" name="newFolderName" placeholder="folder name" required minlength="1">
                 </div>
 
                 <div class="uploadOptionContent" data-option="selectFolder">
@@ -70,7 +70,7 @@
                 <div class="errorMessageContainer">
                     <div class="storageHeader">
                         <h2 class="storageTitle">Storage</h2>
-                        <button class="toggleCreateFolderBtn">
+                        <button type="button" class="toggleCreateFolderBtn">
                             <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="folderPlus">
                                 <path d="M12 10v6"/><path d="M9 13h6"/>
                                 <path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/>
@@ -87,7 +87,7 @@
                                 <p> <%= e.msg %></p>
                             <% }) %>
                         </div>
-                        <button class="closeErrorBtn">
+                        <button type="button" class="closeErrorBtn">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-icon lucide-x">
                                 <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
                             </svg>
@@ -99,9 +99,9 @@
                 <form action="/folder/create" method="post" class="createFolderForm hidden" novalidate>
                     <div class="folderNameInputContainer">
                         <div class="fieldError" id="createFolderError"></div>
-                        <input type="text" id="createFolderInput" name="folderName" placeholder="Folder name" required>
+                        <input type="text" id="createFolderInput" name="folderName" placeholder="folder name" required>
                     </div>
-                    <button class="createFolderBtn">Create</button>
+                    <button type="submit" class="createFolderBtn">Create</button>
                 </form>
             </div>
             <% if (rootFiles.length === 0 && folders.length === 0) { %>
@@ -212,6 +212,10 @@
         const createFolderForm = document.querySelector(".createFolderForm");
 
         createFolderForm.addEventListener('submit', (e) => {
+            if (!createFolderForm.checkValidity()) {
+                e.preventDefault();
+                createFolderErrorDiv.textContent = createFolderInput.validationMessage;
+            }
             createFolderErrorDiv.replaceChildren();
             const createFolderErrors = [];
 
@@ -252,10 +256,6 @@
                 serverErrorsDiv.classList.add("hidden");
             })
         }
-
-
-
-
     </script>
 </body>
 </html>
