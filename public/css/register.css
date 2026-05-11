@@ -10,7 +10,6 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    background: radial-gradient(circle, rgba(4, 84, 181, 1) 0%, rgba(1, 60, 115, 1) 100%);
     min-height: 100vh;
 }
 
@@ -20,7 +19,6 @@ body {
     gap: 1rem;
     width: 100%;
     max-width: 600px;
-    color: white;
     padding: 1.5rem;
 }
 
@@ -29,13 +27,14 @@ body {
     grid-template-columns: 1fr auto 1fr;
     align-items: center;
     gap: 0.5rem;
+    border-bottom: 1px solid black;
 }
 
 .homeLink {
     justify-self: start;
     text-decoration: none;
-    color: white;
-    border: 1px solid white;
+    color: black;
+    border: 1px solid black;
     padding: 0.3rem 1rem;
 }
 
@@ -50,7 +49,7 @@ body {
 }
 
 .registerMainTitle {
-    font-weight: unset;
+    font-weight: 500;
 }
 
 #form {
@@ -67,21 +66,22 @@ body {
 
 input {
     padding: 0.5rem;
-    border: 1px solid white;
+    border: 1px solid black;
     background: none;
-    color: white;
+    color: black;
 }
 
 input::placeholder {
-    color: white;
+    color: black;
     font-style: italic;
 }
 
 input:focus {
     outline: none;
-    border-color: white;
-    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
+    border-color: black;
+    box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.3);
 }
+
 .backendErrors {
     color: #ff6b6b;
     border: 1px solid #ff6b6b;
@@ -108,17 +108,13 @@ svg {
     display: block;
 }
 
-input::placeholder {
-    color: rgba(255, 255, 255, 0.7);
-    font-style: italic;
-}
 
 .createAccountBtn {
     padding: 0.3rem 1.5rem;
     background: none;
-    border: 1px solid white;
+    border: 1px solid black;
     cursor: pointer;
-    color: white;
+    color: black;
     margin-top: 1rem;
 }
 
@@ -130,12 +126,11 @@ input::placeholder {
 
 .loginLink {
     text-decoration: underline;
-    color: white;
+    color: black;
 }
 
-.homeLink:hover,
-.createAccountBtn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(1, 60, 115, 0.4);
+.createAccountBtn:hover,
+.homeLink:hover {
+    box-shadow: 2px 3px 2px rgba(0, 0, 0, 0.3);
 }
 
