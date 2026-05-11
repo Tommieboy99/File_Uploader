@@ -10,7 +10,6 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    background: radial-gradient(circle, rgba(4, 84, 181, 1) 0%, rgba(1, 60, 115, 1) 100%);
     min-height: 100vh;
 }
 
@@ -20,7 +19,6 @@ body {
     gap: 1rem;
     width: 100%;
     max-width: 600px;
-    color: white;
     padding: 1.5rem;
 }
 
@@ -29,12 +27,13 @@ body {
     grid-template-columns: 1fr auto 1fr;
     align-items: center;
     gap: 0.5rem;
+    border-bottom: 1px solid black;
 }
 
 .homeLink {
-    border: 1px solid white;
+    border: 1px solid black;
     padding: 0.3rem 1rem;
-    color: white;
+    color: black;
     text-decoration: none;
     justify-self: start;
 }
@@ -63,15 +62,15 @@ body {
 
 input {
     padding: 0.5rem;
-    border: 1px solid white;
+    border: 1px solid black;
     background: none;
-    color: white;
+    color: black;
 }
 
 input:focus {
     outline: none;
-    border-color: white;
-    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
+    border-color: black;
+    box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.3);
 }
 
 .fieldError {
@@ -81,15 +80,15 @@ input:focus {
 .loginBtn {
     padding: 0.3rem 1.5rem;
     background: none;
-    border: 1px solid white;
+    border: 1px solid black;
     cursor: pointer;
-    color: white;
+    color: black;
     margin-top: 1rem;
 }
 
 .registerLink {
     text-decoration:underline;
-    color: white;
+    color: black;
 }
 
 .container {
@@ -122,8 +121,7 @@ input:focus {
 
 .homeLink:hover,
 .loginBtn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(1, 60, 115, 0.4);
+    box-shadow: 2px 3px 2px rgba(0, 0, 0, 0.3);
 }
 
 .fieldError:empty {
