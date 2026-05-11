@@ -40,7 +40,8 @@ body {
     padding: 0.5rem;
     flex: 1;
     text-align: center;
-    border: 1px solid black;
+    background: black;
+    color: white;
 }
 
 .cta {
