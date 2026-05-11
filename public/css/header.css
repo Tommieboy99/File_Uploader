@@ -9,12 +9,14 @@
 
 .authLink {
     padding: 0.3rem 0.5rem;
-    border: 1px solid black;
-    color: black;
+    color: white;
+    background-color: black;
     text-decoration: none;
+    transition: transform 0.2s ease;
 }
 
 .authLink:hover {
-    box-shadow: 2px 3px 2px rgba(0, 0, 0, 0.3);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 

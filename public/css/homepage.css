@@ -40,8 +40,8 @@ body {
     padding: 0.5rem;
     flex: 1;
     text-align: center;
-    background: black;
-    color: white;
+    border: 1px solid black;
+    color: black;
 }
 
 .cta {
@@ -53,12 +53,14 @@ body {
 .signUpLink {
     padding: 0.3rem 1rem;
     text-decoration: none;
-    margin-left: auto;
-    border: 1px solid black;
-    color: inherit;
+    align-self: flex-end;
+    background-color: black;
+    color: white;
+    transition: transform 0.2s ease;
 }
 
 .signUpLink:hover{
-    box-shadow: 2px 3px 2px rgba(0, 0, 0, 0.3);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
