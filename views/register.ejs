@@ -14,39 +14,37 @@
       <h1>FISTO</h1>
     </header>
     <main class="registerMain">
-      <div class="container">
-        <h2 class="registerMainTitle">Create your account</h2>
-        <% if (locals.errors) { %>
-          <div class="backendErrors">
-            <div>
-              <p> Registration failed: </p>
-              <% errors.forEach((error) => { %>
-                <p> <%= error.msg %></p>
-              <% }) %>
-            </div>
-            <button class="closeErrorBtn">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-icon lucide-x">
-                <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
-              </svg>
-            </button>
+      <h2 class="registerMainTitle">Create your account</h2>
+      <% if (flash.errors) { %>
+        <div class="backendErrors">
+          <div class="errorContainer">
+            <p> Registration failed: </p>
+            <% flash.errors.forEach((error) => { %>
+              <p> <%= error.msg %></p>
+            <% }) %>
           </div>
-        <% } %>
-      </div>
-      <form action="/auth/register" method="POST" id="form" novalidate>
+          <button class="closeErrorBtn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-icon lucide-x">
+              <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+            </svg>
+          </button>
+        </div>
+      <% } %>
+      <form action="/register" method="POST" id="form" novalidate>
         <div class="inputContainer">
-          <p class="errorMessage"></p>
+          <p class="errorMessage" id="emailError"></p>
           <label for="email">Email</label>
-          <input type="email" name="email" placeholder="johndoe@example.com" required/>
+          <input type="email" name="email" id="email" placeholder="johndoe@example.com" required/>
         </div>
         
         <div class="inputContainer">
-          <p class="errorMessage"></p>
+          <p class="errorMessage" id="passwordError"></p>
           <label for="password">Password</label>
           <input id="password" name="password" type="password" required minlength="8"/>
         </div>
 
         <div class="inputContainer">
-          <p class="errorMessage"></p>
+          <p class="errorMessage" id="confirmPasswordError"></p>
           <label for="confirmPassword">Confirm Password</label>
           <input id="confirmPassword" name="confirmPassword" type="password" required />
         </div>
@@ -54,75 +52,94 @@
         <button type="submit" class="createAccountBtn">Create Account</button>
       </form>
 
-      <p>Have an account? <a href="/auth/login" class="loginLink">Log In</a></p>
+      <p>Have an account? <a href="/login" class="loginLink">Log In</a></p>
     </main>
   </div>
 
   <script>
-    const form = document.getElementById('form');
-
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-
-      const backendErrors = document.querySelector('.backendErrors')
-      if (backendErrors) backendErrors.classList.add('hidden')
-
-      form.querySelectorAll(".errorMessage").forEach(el => el.textContent = "");
-
-      const email = form.elements.email
-      const password = form.elements.password
-      const confirmPassword = form.elements.confirmPassword
-
-      let hasError = false;
-
-      if (!email.checkValidity()) {
-        hasError = true;
-
-        if (email.validity.valueMissing) {
-          showError(email, 'Email is required')
-        } else if (email.validity.typeMismatch) {
-          showError(email, 'Invalid email')
-        }
-      }
-
-      if (!password.checkValidity()) {
-        hasError = true;
-
-        if (password.validity.valueMissing) {
-          showError(password, 'Password is required');
-        } else if (password.validity.tooShort) {
-          showError(password, 'Password is too short (min. 8 characters)');
-        }
-      }
-
-      if (confirmPassword.validity.valueMissing) {
-        hasError = true;
-        showError(confirmPassword, 'Confirm password is required')
-      } else if (password.value !== confirmPassword.value) {
-        hasError = true;
-        showError(confirmPassword, 'Passwords do not match');
-      }
-
-      if (!hasError) {
-        form.submit();
-      }
-    })
-
-    function showError(input, message) {
-      const field = input.closest('.inputContainer');
-      const errorEl = field.querySelector('.errorMessage');
-
-      errorEl.textContent = message;
-    }
-
+    const backendErrors = document.querySelector('.backendErrors')
     const closeErrorBtn = document.querySelector('.closeErrorBtn');
-    const backendErrorsDiv = document.querySelector('.backendErrors');
 
     if (closeErrorBtn) {
       closeErrorBtn.addEventListener('click', () => {
-        backendErrorsDiv.classList.add("hidden");
+        backendErrors.classList.add("hidden");
       })
     }
+
+    const form = document.getElementById('form');
+    const fields = {
+      email: {
+        input: document.querySelector('#email'),
+        error: document.querySelector('#emailError')
+      },
+      password: {
+        input: document.querySelector('#password'),
+        error: document.querySelector('#passwordError')
+      },
+      confirm: {
+        input: document.querySelector('#confirmPassword'),
+        error: document.querySelector('#confirmPasswordError')
+      }
+    }
+
+    function validateEmail() {
+      const { input, error} = fields.email;
+
+      input.setCustomValidity("");
+
+      if (input.validity.valueMissing) {
+        input.setCustomValidity("Email is required");
+      } else if (input.validity.typeMismatch) {
+        input.setCustomValidity("Enter a valid email address");
+      }
+
+      error.textContent = input.validationMessage;
+    }
+
+    function validatePassword() {
+      const { input, error } = fields.password;
+
+      input.setCustomValidity("");
+
+      if (input.validity.valueMissing) {
+        input.setCustomValidity("Password is required");
+      } else if (input.validity.tooShort) {
+        input.setCustomValidity("Minimum 8 characters");
+      }
+
+      error.textContent = input.validationMessage;
+    }
+
+    function validateConfirmPassword() {
+      const { input, error } = fields.confirm;
+      const passwordValue = fields.password.input.value;
+
+      input.setCustomValidity("");
+
+      if (input.validity.valueMissing) {
+        input.setCustomValidity("Please confirm your password");
+      } else if (input.value !== passwordValue) {
+        input.setCustomValidity("Passwords do not match");
+      }
+
+      error.textContent = input.validationMessage;
+    }
+
+    form.addEventListener('submit', (e) => {
+
+      validateEmail();
+      validatePassword();
+      validateConfirmPassword();
+
+      if (!form.checkValidity()) {
+        e.preventDefault();
+        if (backendErrors) backendErrors.classList.add('hidden')
+      }
+    })
+
+    fields.email.input.addEventListener("blur", validateEmail);
+    fields.password.input.addEventListener("blur", validatePassword);
+    fields.confirm.input.addEventListener("blur", validateConfirmPassword);
   </script>
 </body>
 </html>
