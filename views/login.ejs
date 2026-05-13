@@ -14,111 +14,108 @@
       <h1>FISTO</h1>
     </header>
     <main class="loginMain">
-      <div class="container">
-        <h2 class="loginMainTitle">Log into your account</h2>
-        <% if (messages.length > 0) { %>
-          <div class="backendErrors">
-            <div>
-              <p>Login failed:</p>
-              <p><%= messages[0] %></p>
-            </div>
-            <button class="closeErrorBtn">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-icon lucide-x">
-                <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
-              </svg>
-            </button>
-          </div>
-        <% } %>
-      </div>
+      <% if (flash.success) { %>
+        <p class="successMessage"> <%= flash.success %> </p>
+      <% } %>
+
+      <h2 class="loginMainTitle">Log into your account</h2>
       
-      <form action="/auth/login" method="POST" class="loginForm" novalidate>
+      <% if (flash.error) { %>
+        <div class="backendErrors">
+          <div class="errorContainer">
+            <p>Login failed:</p>
+            <p><%= flash.error %></p>
+          </div>
+          <button class="closeErrorBtn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-icon lucide-x">
+              <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+            </svg>
+          </button>
+        </div>
+      <% } %>
+      
+      <form action="/login" method="POST" class="loginForm" novalidate>
         <div class="inputContainer">
-          <div class="fieldError" id="emailError"></div>
+          <p class="errorMessage" id="emailError"></p>
           <label for="email">Email</label>
-          <input id="email" name="email" type="email" required maxlength="254"/>
+          <input id="email" name="email" type="email" required/>
         </div>
 
         <div class="inputContainer">
-          <div class="fieldError" id="passwordError"></div>
+          <p class="errorMessage" id="passwordError"></p>
           <label for="password">Password</label>
-          <input id="password" name="password" type="password" required maxlength="128" minlength="8" />
+          <input id="password" name="password" type="password" required/>
         </div>
 
         <button type="submit" class="loginBtn">Log In</button>
       </form>
 
-      <p>No account? <a href="/auth/register" class="registerLink">Create one</a></p>
+      <p>No account? <a href="/register" class="registerLink">Create one</a></p>
     </main>
   </div>
 
   <script>
-    const email = document.querySelector('#email');
-    const password = document.querySelector('#password');
-    const emailErrorDiv = document.querySelector('#emailError');
-    const passwordErrorDiv = document.querySelector('#passwordError');
     const form = document.querySelector('.loginForm');
-
-    form.addEventListener('submit', (e) => {
-
-      emailErrorDiv.replaceChildren();
-      passwordErrorDiv.replaceChildren();
-
-      const emailErrors = [];
-      const passwordErrors = [];
-
-      if (email.validity.valueMissing) {
-        emailErrors.push('Email is required');
+    const fields = {
+      email: {
+        input: document.querySelector('#email'),
+        error: document.querySelector("#emailError")
+      },
+      password: {
+        input: document.querySelector('#password'),
+        error: document.querySelector('#passwordError')
       }
-
-      if (email.validity.typeMismatch) {
-        emailErrors.push('Invalid email')
-      }
-
-      if (email.validity.tooLong) {
-        emailErrors.push('Email is too long (max. 254 characters)')
-      }
-
-      if (password.validity.valueMissing) {
-        passwordErrors.push('Password is required');
-      }
-
-      if (password.validity.tooShort) {
-        passwordErrors.push('Password is too short (min. 8 characters)');
-      }
-
-      if (password.validity.tooLong) {
-        passwordErrors.push('Password is too long (max. 128 characters)');
-      }
-
-      if (emailErrors.length > 0 || passwordErrors.length > 0) {
-        e.preventDefault();
-        if (backendErrorsDiv) {
-          backendErrorsDiv.classList.add('hidden');
-        }
-        
-        emailErrors.forEach((err) => {
-          const p = document.createElement('p');
-          p.textContent = err;
-          emailErrorDiv.appendChild(p);
-        })
-
-        passwordErrors.forEach((err) => {
-          const p = document.createElement('p');
-          p.textContent = err;
-          passwordErrorDiv.appendChild(p);
-        })
-      }
-    } )
+    }
 
     const closeErrorBtn = document.querySelector('.closeErrorBtn');
-    const backendErrorsDiv = document.querySelector('.backendErrors');
+    const backendErrors = document.querySelector('.backendErrors');
+    const successMessage = document.querySelector('.successMessage');
 
     if (closeErrorBtn) {
       closeErrorBtn.addEventListener('click', () => {
-        backendErrorsDiv.classList.add("hidden");
+        backendErrors.classList.add("hidden");
       })
     }
 
+    function validateEmail() {
+      const { input, error } = fields.email;
+
+      input.setCustomValidity("");
+
+      if (input.validity.valueMissing) {
+        input.setCustomValidity("Email is required");
+      } else if (input.validity.typeMismatch) {
+        input.setCustomValidity("Enter a valid email address")
+      }
+
+      error.textContent = input.validationMessage;
+    }
+
+    function validatePassword() {
+      const { input, error} = fields.password;
+
+      input.setCustomValidity("");
+
+      if (input.validity.valueMissing) {
+        input.setCustomValidity("Password is required");
+      } 
+
+      error.textContent = input.validationMessage;
+    }
+
+    form.addEventListener('submit', (e) => {
+      validateEmail();
+      validatePassword();
+
+      if (!form.checkValidity()) {
+        e.preventDefault();
+        if (backendErrors) backendErrors.classList.add("hidden");
+        if (successMessage) successMessage.classList.add("hidden");
+      }
+    })
+
+    fields.email.input.addEventListener("blur", validateEmail);
+    fields.password.input.addEventListener("blur", validatePassword);
   </script>
 </body>
 </html>
