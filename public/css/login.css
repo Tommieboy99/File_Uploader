@@ -19,21 +19,20 @@ body {
     gap: 1rem;
     width: 100%;
     max-width: 600px;
-    padding: 1.5rem;
+    padding: 1rem;
 }
 
 .loginHeader {
     display: grid;
     grid-template-columns: 1fr auto 1fr;
     align-items: center;
-    gap: 0.5rem;
     border-bottom: 1px solid black;
 }
 
 .homeLink {
-    border: 1px solid black;
     padding: 0.3rem 1rem;
-    color: black;
+    color: white;
+    background-color: black;
     text-decoration: none;
     justify-self: start;
 }
@@ -41,7 +40,7 @@ body {
 .loginMain {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 1rem;
 }
 
 .loginMainTitle {
@@ -57,7 +56,6 @@ body {
 .inputContainer {
     display: flex;
     flex-direction: column;
-    gap: 0.15rem;
 }
 
 input {
@@ -73,17 +71,16 @@ input:focus {
     box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.3);
 }
 
-.fieldError {
-    color: #ff6b6b;
+.errorMessage {
+    color: red;
 }
 
 .loginBtn {
     padding: 0.3rem 1.5rem;
-    background: none;
-    border: 1px solid black;
+    background: black;
     cursor: pointer;
-    color: black;
-    margin-top: 1rem;
+    color: white;
+    transition: transform 0.2s ease;
 }
 
 .registerLink {
@@ -100,28 +97,37 @@ input:focus {
 .closeErrorBtn {
     border: none;
     background: none;
-    color: #ff6b6b;
+    color: red;
+    cursor: pointer;
+}
+
+.successMessage {
+    color: green;
+    border: 1px solid green;
     padding: 0.5rem;
+    text-align: center;
 }
 
 .hidden {
     display: none !important;
 }
 
+svg {
+    display: block;
+}
+
 .backendErrors {
-    color: #ff6b6b;
-    border: 1px solid #ff6b6b;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 0.5rem;
-    background: rgba(255, 107, 107, 0.1);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    color: red;
+    border: 1px solid red;
     padding: 0.5rem;
 }
 
 .homeLink:hover,
 .loginBtn:hover {
-    box-shadow: 2px 3px 2px rgba(0, 0, 0, 0.3);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
 .fieldError:empty {
