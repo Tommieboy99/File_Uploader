@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Folder</title>
+  <link rel="stylesheet" href="/css/file.css">
+</head>
+<body>
+    <div class="filePage">
+        <div class="fileNameContainer">
+            <p>Name: <%= file.name %></p>
+            <img src="<%= imageUrl %>" alt="">
+        </div>
+        <div class="fileInfo">
+            <p>Size: <%= file.size %> </p>
+            <p> <%= file.createdAt %> </p>
+        </div>
+        <a download href="<%= file.url %>">
+            Download
+        </a>
+    </div>
+</body>
+</html>

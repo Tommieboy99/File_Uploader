@@ -24,7 +24,7 @@ const uploadImage = async (imagePath) => {
         const result = await cloudinary.uploader.upload(imagePath, options);
         return result;
     } catch (error) {
-        console.log(error);
+        throw error;
     } finally {
         fs.unlink(imagePath, (err) => {
             if (err) console.log(err);
@@ -97,7 +97,6 @@ const validateUpload = [
     .if(body("uploadOption").equals("newFolder"))
     .trim()
     .notEmpty().withMessage("Folder name is required")
-    .toLowerCase()
     .custom(async (value, { req }) => {
         const folder = await prisma.folder.findUnique({
             where: {
@@ -125,63 +124,76 @@ const validateUpload = [
 
 ]
 
-export const fileUpload = [isAuthenticated, upload.single('uploaded_file'), ...validateUpload, async (req, res) => {
+export const fileUpload = [isAuthenticated, upload.single('uploaded_file'), ...validateUpload, async (req, res, next) => {
 
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.status(400).render("errors", { errors: errors.array() })
-    }
-    const result = await uploadImage(req.file.path)
-    const publicId = result.public_id;
-    const url = result.secure_url;
+        req.session.flash = {
+            uploadFileErrors: errors.array()
+        }
 
-    const { uploadOption, newFolderName, selectedFolder } = matchedData(req);
-
-    if (uploadOption === "noFolder") {
-        const root = await prisma.folder.findFirst({
-            where: {
-                userId: req.user.id,
-                isRoot: true
-            }
+        fs.unlink(req.file.path, (err) => {
+            if (err) console.log(err);
         })
 
-        await prisma.file.create({
-            data: {
-                name: req.file.originalname,
-                size: req.file.size,
-                public_id: publicId,
-                url: url,
-                folderId: root.id
-            },
-        });
-    } else if (uploadOption === "newFolder") {
-        await prisma.folder.create({
-            data: {
-                name: newFolderName,
-                userId: req.user.id,
-                files: {
-                    create: {
-                        name: req.file.originalname,
-                        size: req.file.size,
-                        public_id: publicId,
-                        url: url
+        return res.redirect("/");
+    }
+
+    try {
+        const result = await uploadImage(req.file.path);
+        const { public_id: publicId, secure_url: url } = result;
+        const { uploadOption, newFolderName, selectedFolder } = matchedData(req);
+        
+        if (uploadOption === "noFolder") {
+            const root = await prisma.folder.findFirst({
+                where: {
+                    userId: req.user.id,
+                    isRoot: true
+                }
+            });
+
+            await prisma.file.create({
+                data: {
+                    name: req.file.originalname,
+                    size: req.file.size,
+                    public_id: publicId,
+                    url,
+                    folderId: root.id
+                }
+            });
+        } else if (uploadOption === "newFolder") {
+            await prisma.folder.create({
+                data: {
+                    name: newFolderName,
+                    userId: req.user.id,
+                    files: {
+                        create: {
+                            name: req.file.originalname,
+                            size: req.file.size,
+                            public_id: publicId,
+                            url
+                        }
                     }
                 }
-            }
-        })
+            });
 
-    } else if (uploadOption === "selectFolder") {
-        await prisma.file.create({
-            data: {
-                name: req.file.originalname,
-                size: req.file.size,
-                public_id: publicId,
-                url: url,
-                folderId: Number(selectedFolder)
-            }
-        })
+        } else if (uploadOption === "selectFolder") {
+            await prisma.file.create({
+                data: {
+                    name: req.file.originalname,
+                    size: req.file.size,
+                    public_id: publicId,
+                    url,
+                    folderId: Number(selectedFolder)
+                }
+            });
+        }
+
+        res.redirect("/");
+
+    } catch (e) {
+        return next(e);
     }
-
 }]
 
 export const renderFilePage = async (req, res) => {
@@ -191,7 +203,13 @@ export const renderFilePage = async (req, res) => {
         }
     })
 
-    res.render("file", { file, user: req.user})
+    const imageUrl = cloudinary.url(file.public_id, {
+        width: 250,
+        height: 250,
+        crop: "fill"
+    })
+
+    res.render("file", { file, imageUrl})
 }
 
 

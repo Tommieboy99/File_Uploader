@@ -1,0 +1,30 @@
+:root {
+    --font-size: clamp(16px, 15px + 0.3vw, 18px);
+
+    --fs-h1: clamp(2.4rem, 1.9rem + 2vw, 3.4rem);
+    --fs-h2: clamp(1.8rem, 1.4rem + 1vw, 2.6rem);
+
+    --fs-base: 1rem;
+    --fs-ui: clamp(0.9rem, 0.85rem + 0.2vw, 1rem);
+
+}
+
+html {
+    font-size: var(--font-size);
+}
+
+h1 {
+    font-size: var(--fs-h1);
+}
+
+h2 {
+    font-size: var(--fs-h2);
+}
+
+p {
+    font-size: var(--fs-base);
+}
+
+a, button, input, select{
+    font-size: var(--fs-base);
+}

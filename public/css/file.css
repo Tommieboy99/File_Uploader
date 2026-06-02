@@ -1,0 +1,54 @@
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 1rem;
+}
+
+.filePage {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.fileNameContainer {
+    display: flex;
+    flex-direction: column;
+    color: black;
+    gap: 0.5rem;
+}
+
+.fileInfo {
+    color: black;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+a {
+    background-color: black;
+    color: white;
+    cursor: pointer;
+    border: none;
+    padding: 0.3rem 0.5rem;
+    text-align: center;
+    text-decoration: none;
+}
+
+a:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+img {
+        border: 1px solid black;
+}
