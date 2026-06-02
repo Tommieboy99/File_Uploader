@@ -6,11 +6,11 @@
     padding: 0;
 }
 
+/* Upload Section */
 body {
     display: grid;
     grid-template-rows: auto 1fr;
-    gap: 1.5rem;
-    min-height: 100vh;
+    gap: 1rem;
     max-width: 1620px;
     justify-self: center;
     width: 100%;
@@ -20,9 +20,7 @@ body {
     padding-inline: 0.5rem;
     display: flex;
     flex-direction: column;
-    align-items: center; 
     gap: 2rem;
-    color: black;
 }
 
 .fileSection {
@@ -30,12 +28,9 @@ body {
     flex-direction: column;
     gap: 1rem;
     width: 100%;
-    max-width: 620px;
 }
 
-.uploadTitle,
-.storageTitle {
-    font-size: var(--fs-h2);
+.uploadTitle {
     font-weight: 500;
 }
 
@@ -45,140 +40,95 @@ body {
     gap: 1rem;
 }
 
-#fileUploadContainer {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 1px dashed black;
-    padding: 2rem;
-}
-
-.fieldError:empty {
-    display: none;
-}
-
-.fieldError {
-    color: #ff6b6b;
-}
-
-.uploadBtn:hover {
-    box-shadow: 2px 3px 2px rgba(0, 0, 0, 0.3);
-}
-
 .uploadContainer {
     display: flex;
     flex-direction: column;
     gap: 0.3rem;
 }
 
-input[type=file] {
-    padding: 2rem;
+.inputContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+#fileLabel {
+    padding-block: 2rem;
+    color: black;
+    text-align: center;
+    cursor: pointer;
+    position: relative;
     border: 1px dashed black;
 }
 
-input[type=file]::file-selector-button {
-    border: 1px solid black;
-    background: none;
-    padding: 0.3rem 0.5rem;
-    color: black;
-    margin-right: 1rem;
-    cursor: pointer;
+#fileLabel:hover {
+    color: white;
+    background-color: black;
+    border-color: white;
+}
+
+#fileInput {
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1px;
+    height: 1px;
 }
 
 .uploadOptions {
     display: flex;
-    gap: 4px;
+    flex-direction: column;
+    gap: 0.3rem;
     border: none;
-    width: 100%;
+    position: relative;
 }
 
-legend {
+.fieldsetLegend {
     position: absolute;
     width: 1px;
     height: 1px;
+    top: 0;
+    left: 0;
     overflow: hidden;
-    clip: rect(0 0 0 0);
-    border: none;
+    opacity: 0;
+}
+
+.radioContainer {
+    display: flex;
+    gap: 0.3rem;
 }
 
 input[type="radio"] {
     position: absolute;
     opacity: 0;
     pointer-events: none;
+    top: 0;
+    left: 0;
+    width: 1px;
+    height: 1px;
 }
 
 .radio {
     cursor: pointer;
     position: relative;
-    border: 1px solid black;
     user-select: none;
     flex: 1;
-    padding: 0.5rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    padding-block: 0.3rem;
     text-align: center;
+    color: black;
+    border: 1px solid black;
 }
 
 .radio:hover{
-    box-shadow: 2px 3px 2px rgba(0, 0, 0, 0.3);
+    color: white;
+    background-color: black;
 }
 
 .radio:has(input:checked) {
-    font-weight: bold;
+    color: white;
+    background-color: black;
 }
-
-select {
-    padding: 0.5rem;
-    border: 1px solid black;
-    background: none;
-    color: black;
-    width: 100%;
-}
-
-input[type='text'] {
-    background: none;
-    border: 1px solid black;
-    padding: 0.5rem;
-    color: black;
-}
-
-input {
-    width: 100%;
-}
-
-.storageHeaderContainer {
-    display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
-}
-
-.createFolderContainer {
-    display: flex;
-    flex-direction: column;
-    gap: 0.2rem;
-}
-
-input:focus,
-select:focus {
-    outline: none;
-    border-color: black;
-    box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.3);
-}
-
-input::placeholder {
-    color: black;
-    font-style: italic;
-}
-
-.uploadBtn {
-    padding: 0.5rem;
-    background: none;
-    border: 1px solid black;
-    cursor: pointer;
-    color: black;
-}
-
 
 .uploadOptionContent {
     display: none;
@@ -186,12 +136,122 @@ input::placeholder {
     gap: 0.3rem;
 }
 
+input[type='text'] {
+    background: none;
+    border: 1px solid black;
+    padding: 0.3rem;
+    color: black;
+}
+
+select {
+    padding: 0.3rem;
+    border: 1px solid black;
+    background: none;
+    color: black;
+    width: 100%;
+}
+
+.errorMessage:empty {
+    display: none;
+}
+
+.errorMessage {
+    color: red;
+}
+
+.uploadBtn {
+    padding-block: 0.3rem;
+    cursor: pointer;
+    color: white;
+    background-color: black;
+}
+
+.uploadBtn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Storage Section */
 .storageSection {
     display: flex;
     flex-direction: column;
     gap: 1rem;
     width: 100%;
-    max-width: 1000px;
+}
+
+.storageTitle {
+    font-weight: 500;
+}
+
+.headerContent {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.storageHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.createFolderBtn {
+    background-color: black;
+    color: white;
+    cursor: pointer;
+    border: none;
+    padding: 0.3rem 0.5rem;
+}
+
+.createFolderBtn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+#createFolderDialog {
+    border: 1px solid black;
+    margin: auto;
+    max-width: 350px;
+    width: 90%;
+}
+
+#createFolderDialog::backdrop {
+    background: rgba(0, 0, 0, 0.5);
+}
+
+#closeDialogBtn {
+    display: flex;
+    justify-self: end;
+    background: none;
+    cursor: pointer;
+    border: none;
+    padding: 0.5rem;
+}
+
+.createFolderForm {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.5rem;
+}
+
+.backendErrors {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    color: red;
+    border: 1px solid red;
+}
+
+.errorContainer {
+    padding: 0.5rem;
+}
+
+.closeErrorBtn {
+    border: none;
+    background: none;
+    color: red;
+    cursor: pointer;
+    padding: 0.5rem;
 }
 
 .folderOverview {
@@ -208,34 +268,25 @@ input::placeholder {
     gap: 0.5rem;
     color: black;
     text-decoration: none;
+    word-break: break-word;
+}
+
+.file:hover,
+.folder:hover {
+    color: white;
+    background-color: black;
 }
 
 svg {
     flex-shrink: 0;
+    display: block;
 }
 
-
-.storageHeader {
-    display: flex;
-    justify-content: space-between;
-}
 
 .hidden {
     display: none !important;
 }
 
-.createFolderForm {
-    display: flex;
-    justify-content: space-between;
-    gap: 0.5rem;
-}
-
-.folderNameInputContainer {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 0.2rem;
-}
 
 .errorMessageContainer {
     display: flex;
@@ -253,46 +304,21 @@ svg {
     gap: 0.3rem;
 }
 
-.closeErrorBtn {
-    border: none;
-    background: none;
-    color: #ff6b6b;
-    padding: 0.5rem;
-}
 
 .createFolderInput {
     width: 100%;
 }
 
-.toggleCreateFolderBtn {
-    background: none;
-    border: none;
-    color: black;
-    cursor: pointer;
-}
-
-.createFolderBtn {
-    background: none;
-    border: 1px solid black;
-    color: black;
-    cursor: pointer;
-    padding: 0.5rem;
-    align-self: end;
-}
-
-#newFolderName,
-#createFolderInput {
-    text-transform: lowercase;
-}
-
-.createFolderBackendError:empty {
-    display: none;
-}
-
 @media (min-width: 1000px) {
     .main {
         flex-direction: row;
-        align-items: unset; 
-        justify-content: center;
+    }
+
+    .fileSection {
+        flex: 1;
+    }
+
+    .storageSection {
+        flex: 1.3;
     }
 }

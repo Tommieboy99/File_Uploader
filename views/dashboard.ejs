@@ -14,11 +14,12 @@
     <main class="main">
         <div class="fileSection">
             <h2 class="uploadTitle">Upload</h2>
-            
-            <% if (fileUploadErrors) { %>
-                <div class="serverErrors">
-                    <div>
-                        <% fileUploadErrors.forEach((e) => { %>
+
+            <% if (flash.uploadFileErrors) { %>
+                <div class="backendErrors">
+                    <div class="errorContainer">
+                        <p>File upload failed:</p>
+                        <% flash.uploadFileErrors.forEach((e) => { %>
                             <p> <%= e.msg %></p>
                         <% }) %>
                     </div>
@@ -29,32 +30,40 @@
                     </button>
                 </div>
             <% } %> 
-
+            
             <form action="/file/upload" method="post" enctype="multipart/form-data" class="uploadForm" novalidate>
 
                 <div class="uploadContainer">
-                    <div class="fieldError" id="fileErrors"></div>
-                    <input type="file" id="file" name="uploaded_file" required>
+                    <p class="errorMessage" id="fileError"></p>
+                    <div class="inputContainer">
+                        <label id="fileLabel">
+                            <p id="inputMessage">Click to select a file</p>
+                            <input type="file" id="fileInput" name="uploaded_file" required accept="image/*">
+                        </label>
+                    </div>
                 </div>
 
                 <fieldset class="uploadOptions">
-                    <legend>Upload options</legend>
-
-                    <label class="radio"><input type="radio" name="uploadOption" value="noFolder" checked>No folder</label>
-                    <label class="radio"><input type="radio" name="uploadOption" value="newFolder">New folder</label>
-                    <% if (folders.length !== 0) { %>
-                        <label class="radio"><input type="radio" name="uploadOption" value="selectFolder">Select folder</label>
-                    <% } %>
+                    <legend class="fieldsetLegend">Upload options</legend>
+                    <p class="errorMessage" id="optionError"></p>
+                    <div class="radioContainer">
+                        <label class="radio"><input type="radio" name="uploadOption" value="noFolder" required>No folder</label>
+                        <label class="radio"><input type="radio" name="uploadOption" value="newFolder">New folder</label>
+                        <% if (folders.length !== 0) { %>
+                            <label class="radio"><input type="radio" name="uploadOption" value="selectFolder">Select folder</label>
+                        <% } %>
+                    </div>
                 </fieldset>
 
                 <div class="uploadOptionContent" data-option="newFolder">
-                    <div class="fieldError" id="newFolderErrors"></div>
-                    <input type="text" id="newFolderName" name="newFolderName" placeholder="folder name" required minlength="1">
+                    <p class="errorMessage" id="newFolderError"></p>
+                    <input type="text" id="newFolderInput" name="newFolderName" placeholder="folder name" required minlength="1">
                 </div>
 
                 <div class="uploadOptionContent" data-option="selectFolder">
-                    <div class="fieldError" id="selectFolderErrors"></div>
-                    <select name="selectedFolder" id="selectedFolder" required>
+                    <p class="errorMessage" id="selectFolderError"></p>
+                    <select name="selectedFolder" id="selectFolder" required>
+                        <option value="">Click to select folder</option>
                     <% folders.forEach((folder) => { %>
                         <option value="<%= folder.id %>"> <%= folder.name %> </option>
                     <% }) %>
@@ -66,46 +75,43 @@
         </div>
 
         <div class="storageSection">
-            <div class="storageHeaderContainer">
-                <div class="errorMessageContainer">
-                    <div class="storageHeader">
-                        <h2 class="storageTitle">Storage</h2>
-                        <button type="button" class="toggleCreateFolderBtn">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="folderPlus">
-                                <path d="M12 10v6"/><path d="M9 13h6"/>
-                                <path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/>
-                            </svg>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="folderMin hidden">
-                                <path d="M9 13h6"/><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/>
-                            </svg>
-                        </button>
-                    </div>
-                    <% if (createFolderErrors) { %>
-                    <div class="serverErrors">
-                        <div>
-                            <% createFolderErrors.forEach((e) => { %>
+            <div class="headerContent">
+                <div class="storageHeader">
+                    <h2 class="storageTitle">Storage</h2>
+                    <button type="button" class="createFolderBtn" id="showDialogBtn">Create Folder</button>
+                </div>
+                <% if (flash.createFolderErrors) { %>
+                    <div class="backendErrors">
+                        <div class="errorContainer">
+                            <p>Folder creation failed:</p>
+                            <% flash.createFolderErrors.forEach((e) => { %>
                                 <p> <%= e.msg %></p>
                             <% }) %>
                         </div>
-                        <button type="button" class="closeErrorBtn">
+                        <button class="closeErrorBtn">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-icon lucide-x">
                                 <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
                             </svg>
                         </button>
                     </div>
-                    <% } %> 
-                </div>
-                    
-                <form action="/folder/create" method="post" class="createFolderForm hidden" novalidate>
-                    <div class="folderNameInputContainer">
-                        <div class="fieldError" id="createFolderError"></div>
-                        <input type="text" id="createFolderInput" name="folderName" placeholder="folder name" required>
-                    </div>
-                    <button type="submit" class="createFolderBtn">Create</button>
-                </form>
+                <% } %> 
+                <dialog id="createFolderDialog">
+                    <button id="closeDialogBtn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-icon lucide-x">
+                            <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+                        </svg>
+                    </button>
+                    <form action="/folder/create" method="post" class="createFolderForm" novalidate>
+                        <div class="inputContainer">
+                            <p class="errorMessage" id="createFolderError"></p>
+                            <input type="text" id="createFolderInput" name="folderName" placeholder="folder name" required>
+                        </div>
+                        <button type="submit" class="createFolderBtn">Create</button>
+                    </form>
+                </dialog>
             </div>
             <% if (rootFiles.length === 0 && folders.length === 0) { %>
-                <p>Your storage is empty. Start uploading files!</p>
+                <p>Your storage is empty.</p>
             <% } else { %>
                 <div class="folderOverview">
                 <% rootFiles.map((file) => { %>
@@ -130,59 +136,129 @@
     </main>
     
     <script>
-        const uploadForm = document.querySelector(".uploadForm");
-        const fileErrorsDiv = document.querySelector("#fileErrors");
-        const newFolderErrorsDiv = document.querySelector("#newFolderErrors")
-        const selectFolderErrorsDiv = document.querySelector('#selectFolderErrors');
 
-        function renderErrors() {
-            fileErrorsDiv.replaceChildren();
-            newFolderErrorsDiv.replaceChildren();
-            selectFolderErrorsDiv.replaceChildren();
-
-            const fileInput = document.querySelector('#file');
-            const newFolderInput = document.querySelector("#newFolderName")
-            const folderSelect = document.querySelector('#selectedFolder')
-            const option = document.querySelector('input[name="uploadOption"]:checked').value;
-
-            if (fileInput.validity.valueMissing) {
-                const p = document.createElement("p");
-                p.textContent = 'File is required'
-                fileErrorsDiv.appendChild(p);
+        const fields = {
+            file: {
+                input: document.querySelector('#fileInput'),
+                error: document.querySelector('#fileError'),
+            },
+            option: {
+                input: document.querySelectorAll('input[name="uploadOption"]'),
+                error: document.querySelector('#optionError'),
+            },
+            newFolder: {
+                input: document.querySelector('#newFolderInput'),
+                error: document.querySelector('#newFolderError'),
+            },
+            selectFolder: {
+                input: document.querySelector('#selectFolder'),
+                error: document.querySelector('#selectFolderError'),
+            },
+            createFolder: {
+                input: document.querySelector('#createFolderInput'),
+                error: document.querySelector('#createFolderError')
             }
-
-            if (option === 'newFolder') {
-                if (newFolderInput.validity.valueMissing) {
-                    const p = document.createElement("p");
-                    p.textContent = 'Folder name is required'
-                    newFolderErrorsDiv.appendChild(p);
-                }
-
-                if (newFolderInput.validity.tooShort) {
-                    const p = document.createElement("p");
-                    p.textContent = 'Folder name needs to have at least 1 character'
-                    newFolderErrorsDiv.appendChild(p);
-                }
-            }
-
-            if (option === 'selectFolder' && folderSelect.validity.valueMissing) {
-                const p = document.createElement("p");
-                p.textContent = 'Please select a folder'
-                selectFolderErrorsDiv.appendChild(p);
-            }
- 
-
         }
 
-        uploadForm.addEventListener('submit', (e) => {
-            if (!uploadForm.checkValidity()) {
-                e.preventDefault();
-                renderErrors();
+        const inputMessage = document.querySelector('#inputMessage');
+
+        fields.file.input.addEventListener('change', () => {
+            if (fields.file.input.files.length > 0) {
+                inputMessage.textContent = `Selected file: ${fields.file.input.files[0].name}` 
+            } else {
+                inputMessage.textContent = 'Click to select a file'
             }
         })
 
-        const uploadRadios = document.querySelectorAll('input[name="uploadOption"]');
+        function validateForm() {
+            let isValid = true;
 
+            // reset errors
+            Object.values(fields).forEach(f => {
+                if (f.error) f.error.textContent = "";
+            });
+
+            // FILE
+            if (fields.file.input.validity.valueMissing) {
+                fields.file.error.textContent = "File is required";
+                isValid = false;
+            }
+
+            // RADIO GROUP
+            const selectedOption = [...fields.option.input].some(r => r.checked);
+
+            if (!selectedOption) {
+                fields.option.error.textContent = "Upload option is required";
+                isValid = false;
+            }
+
+            const option = document.querySelector('input[name="uploadOption"]:checked')?.value;
+
+            // CONDITIONAL FIELDS
+            if (option === "newFolder") {
+                if (fields.newFolder.input.validity.valueMissing) {
+                    fields.newFolder.error.textContent = "Folder name is required";
+                    isValid = false;
+                }
+            }
+
+            if (option === "selectFolder") {
+                if (fields.selectFolder.input.validity.valueMissing) {
+                    fields.selectFolder.error.textContent = "Folder selection is required";
+                    isValid = false;
+                }
+            }
+
+            return isValid;
+        }
+
+        const uploadForm = document.querySelector(".uploadForm");
+
+        uploadForm.addEventListener('submit', (e) => {
+            if (!validateForm()) {
+                e.preventDefault();
+            }
+        })
+
+        function validateFile() {
+            if (fields.file.input.validity.valueMissing) {
+                fields.file.error.textContent = "File is required";
+            } else {
+                fields.file.error.textContent = "";
+            }
+        }
+
+        function validateOption() {
+            const selectedOption = [...fields.option.input].some(r => r.checked);
+
+            if (!selectedOption) {
+                fields.option.error.textContent = "Upload option is required";
+            } else {
+                fields.option.error.textContent = "";
+            }
+        }
+
+        function validateNewFolder() {
+            if (fields.newFolder.input.validity.valueMissing) {
+                fields.newFolder.error.textContent = "Folder name is required";
+            } else {
+                fields.newFolder.error.textContent = "";
+            }
+        }
+
+        function validateSelectFolder() {
+            if (fields.selectFolder.input.validity.valueMissing) {
+                fields.selectFolder.error.textContent = "Folder selection is required";
+            } else {
+                fields.selectFolder.error.textContent = "";
+            }
+        }
+
+        fields.file.input.addEventListener("change", validateFile);
+        fields.newFolder.input.addEventListener("input", validateNewFolder);
+        fields.selectFolder.input.addEventListener("change", validateSelectFolder)
+
+        
         function handleRadioChange(value) {
             document.querySelectorAll('.uploadOptionContent').forEach(el => {
                 const isActive = el.dataset.option === value;
@@ -195,65 +271,57 @@
             })
         }
 
-        uploadRadios.forEach(radio => {
+        fields.option.input.forEach(radio => {
             radio.addEventListener("change", (e) => {
+                validateOption();
                 handleRadioChange(e.target.value);
             })
         })
 
-        const checked = document.querySelector('input[name="uploadOption"]:checked')
+        const createFolderDialog = document.querySelector('#createFolderDialog');
+        const showDialogBtn = document.querySelector('#showDialogBtn')
+        const closeDialogBtn = document.querySelector('#closeDialogBtn');
+        
+        showDialogBtn.addEventListener("click", () => {
+            createFolderDialog.showModal();
+        })
 
-        if (checked) {
-            handleRadioChange(checked.value);
+        closeDialogBtn.addEventListener("click", () => {
+            createFolderDialog.close();
+        })
+
+        function validateCreateFolder() {
+            const { input, error } = fields.createFolder;
+
+            error.textContent = "";
+
+            if (input.validity.valueMissing) {
+                error.textContent = "Folder name is required"
+                return false;
+            }
+
+            return true;
         }
 
-        const createFolderInput = document.querySelector('#createFolderInput');
-        const createFolderErrorDiv = document.querySelector('#createFolderError');
         const createFolderForm = document.querySelector(".createFolderForm");
 
         createFolderForm.addEventListener('submit', (e) => {
-            if (!createFolderForm.checkValidity()) {
-                e.preventDefault();
-                createFolderErrorDiv.textContent = createFolderInput.validationMessage;
-            }
-            createFolderErrorDiv.replaceChildren();
-            const createFolderErrors = [];
 
-            if (createFolderInput.validity.valueMissing) {
-                createFolderErrors.push('Name is required');
-            }
+            const isValid = validateCreateFolder();
 
-            if (createFolderErrors.length > 0) {
+            if (!isValid) {
                 e.preventDefault();
-                createFolderErrors.forEach((err) => {
-                    const p = document.createElement("p");
-                    p.textContent = err;
-                    createFolderErrorDiv.appendChild(p);
-                })
             }
         })
 
+        fields.createFolder.input.addEventListener("input", validateCreateFolder);
 
-
-        const toggleCreateFolderForm = document.querySelector('.toggleCreateFolderBtn');
-        const plusFolderSvg = document.querySelector(".folderPlus")
-        const minFolderSvg = document.querySelector(".folderMin")
-        const serverErrorsDiv = document.querySelector('.serverErrors');
-
-        
-
-        toggleCreateFolderForm.addEventListener('click' , () => {
-            plusFolderSvg.classList.toggle("hidden");
-            minFolderSvg.classList.toggle("hidden");
-            createFolderForm.classList.toggle("hidden");
-        })
-
-        const createFolderError = document.querySelector('.createFolderError');
         const closeErrorBtn = document.querySelector('.closeErrorBtn');
+        const backendErrorsDiv = document.querySelector('.backendErrors');
 
         if (closeErrorBtn) {
-            closeErrorBtn.addEventListener('click', () => {
-                serverErrorsDiv.classList.add("hidden");
+            closeErrorBtn.addEventListener("click", () => {
+                backendErrorsDiv.classList.add("hidden");
             })
         }
     </script>
