@@ -15,7 +15,8 @@
   "type": "module",
   "main": "app.js",
   "scripts": {
-    "start": "node --watch app.js"
+    "start": "node app.js",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.5.0",
