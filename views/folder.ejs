@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Folder</title>
+  <link rel="stylesheet" href="/css/folder.css">
+</head>
+<body>
+    <div class="folderPage">
+        <header class="folderHeader">
+            <div class="folderNameContainer">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="folderSvg">
+                    <path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/>
+                </svg>
+                <h2 class="folderName"> <%= folder.name %> </h2>
+            </div>
+            <div class="folderActionsContainer">
+                <button class="button" id="editBtn">Edit</button>
+                <dialog id="editDialog">
+                    <button id="closeEditDialog">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-icon lucide-x">
+                            <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+                        </svg>
+                    </button>
+                    <form action="/folder/edit/<%= folder.id %>" method="post" id="editNameForm" novalidate>
+                        <div class="infoContainer">
+                            <span id="folderNameError"></span>
+                            <label for="updatedFolderName">Folder name:</label>
+                        </div>
+                        <input autofocus type="text" name="folderName" id="updatedFolderName" value="<%= folder.name %>" required>
+                        <button type="submit" id="updateBtn">Update</button>
+                    </form>
+                </dialog>
+                <button class="button" id="deleteBtn">Delete</button>
+                <dialog id="deleteDialog">
+                    <button id="closeDeleteDialog">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-icon lucide-x">
+                            <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+                        </svg>
+                    </button>
+                    <form action="/folder/delete/<%= folder.id %>" method="post" id="deleteFolderForm">
+                        <p>Are you sure you want to delete this folder?</p>
+                        <button type="submit" id="yesBtn">Yes</button>
+                    </form>
+                </dialog>
+            </div>
+        </header>
+
+        <main class="main">
+            <% if (folder.files.length === 0) { %>
+                <div class="emptyFolderContainer">
+                    <p class="emptyFolder">Your folder is empty.</p>
+                </div>
+            <% } else { %>
+                <% folder.files.forEach((file) => { %>
+                    <a href="/file/<%=file.id%>" class="file">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-icon lucide-file">
+                            <path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/>
+                        </svg>
+                        <p> <%= file.name %> </p>
+                    </a>
+                <% }) %>
+            <% } %>
+        </main>
+    </div>
+
+    <script>
+        const editForm = document.querySelector('#editNameForm');
+        const folderNameInput = document.querySelector('#updatedFolderName')
+        const folderNameError = document.querySelector('#folderNameError')
+
+        editForm.addEventListener("submit", (e) => {
+            if (!folderNameInput.validity.valid) {
+                e.preventDefault();
+                if (folderNameInput.validity.valueMissing) {
+                    folderNameError.textContent = 'Folder name cant be empty'
+                }
+            }
+        })
+
+
+
+        const editDialog = document.querySelector('#editDialog')
+        const editBtn = document.querySelector('#editBtn');
+        const input = document.querySelector('#updatedFolderName')
+
+        editBtn.addEventListener("click", () => {
+            editDialog.showModal();
+
+            input.focus()
+            input.setSelectionRange(input.value.length, input.value.length);
+        })
+
+        const deleteDialog = document.querySelector('#deleteDialog');
+        const deleteBtn = document.querySelector('#deleteBtn');
+
+        deleteBtn.addEventListener("click", () => {
+            deleteDialog.showModal();
+        })
+
+        const closeDeleteDialog = document.querySelector('#closeDeleteDialog');
+        const closeEditDialog = document.querySelector('#closeEditDialog');
+
+        closeDeleteDialog.addEventListener("click", () => {
+            deleteDialog.close();
+        })
+
+        closeEditDialog.addEventListener("click", () => {
+            editDialog.close();
+        })
+
+
+
+
+
+
+    </script>
+</body>
+</html>

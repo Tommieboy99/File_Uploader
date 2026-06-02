@@ -1,0 +1,191 @@
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    min-height: 100vh;
+}
+
+.folderPage {
+    padding: 0.5rem;
+    max-width: 1000px;
+    width: 100%;
+    justify-self: center;
+}
+
+.folderHeader {
+    display: grid;
+    grid-template-rows: auto auto;
+    gap: 0.3rem;
+    border: 1px solid black;
+    border-bottom: unset;
+    padding: 0.5rem;
+}
+
+.file:hover {
+    color: white;
+    background-color: black;
+}
+
+.folderNameContainer {
+    display: flex;
+    color: black;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.folderSvg {
+    height: auto;
+    flex-shrink: 0;
+}
+
+.folderName {
+    word-break: break-word;
+    font-weight: 500;
+}
+
+.folderActionsContainer {
+    display: flex;
+    gap: 0.3rem;
+}
+
+.button {
+    flex: 1; 
+    cursor: pointer;
+    background-color: black;
+    color: white;
+    border: none;
+    padding: 0.3rem 0.5rem;
+}
+
+.button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+
+.button:hover {
+    box-shadow: 2px 3px 2px rgba(0, 0, 0, 0.3);
+}
+
+
+.main {
+    border-bottom: 1px solid black;
+}
+
+.emptyFolderContainer {
+    color: black;
+    border: 1px solid black;
+    min-height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-bottom: none;
+}
+
+.file {
+    color: black;
+    border: 1px solid black;
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    align-items: center;
+    text-decoration: none;
+    border-bottom: none;
+}
+
+
+#editDialog, 
+#deleteDialog {
+    border: 1px solid black;
+    margin: auto;
+    max-width: 350px;
+    width: 90%;
+}
+
+#editDialog::backdrop,
+#deleteDialog::backdrop {
+    background: rgba(0, 0, 0, 0.5);
+}
+
+#closeBtn {
+    display: flex;
+    justify-self: end;
+    background: none;
+    cursor: pointer;
+    border: none;
+    padding: 0.5rem;
+}
+
+#closeEditDialog,
+#closeDeleteDialog {
+    display: flex;
+    justify-self: end;
+    background: none;
+    cursor: pointer;
+    border: none;
+    padding: 0.5rem;
+}
+
+#editNameForm,
+#deleteFolderForm {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.5rem;
+}
+
+#updateBtn,
+#yesBtn {
+    background-color: black;
+    color: white;
+    cursor: pointer;
+    border: none;
+    padding: 0.3rem 0.5rem;
+}
+
+input[type='text'] {
+    background: none;
+    border: 1px solid black;
+    padding: 0.3rem;
+    color: black;
+}
+
+
+.infoContainer {
+    display: flex;
+    flex-direction: column;
+}
+
+#folderNameError {
+    color: red;
+}
+
+#folderNameError:empty {
+    display: none;
+}
+
+
+@media (min-width: 500px) {
+    .button {
+        flex: none;
+    }
+
+    .folderHeader {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        grid-template-rows: unset;
+        align-items: center;
+    }
+
+    .folderContainer {
+        justify-content: space-between;
+        align-items: center;
+        gap: unset;
+        flex-direction: row;
+    }
+}
